@@ -33,20 +33,25 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
         $dt = time();
         $waktu = strftime("%Y-%m-%d %H:%M:%S", $dt);
         $pelayanan->tanggal = $waktu;
-        if($pelayanan->save()){
-            if(isset($_POST['simpan'])){
-                $session->pesan("Berhasil menambah pelayanan {$name}");
-                redirect_to("tampil_pelayanan.php");
+        try{
+            if($pelayanan->save()){
+                if(isset($_POST['simpan'])){
+                    $session->pesan("Berhasil menambah pelayanan {$name}");
+                    redirect_to("tampil_pelayanan.php");
+                }
+                if(isset($_POST['simpanbaru'])){
+                    $session->pesan("Pelayanan {$name} berhasil di tambah");
+                    redirect_to("tambah_pelayanan.php");
+                }
+            }else{
+                $message = "Gagal menambah pelayanan";
             }
-            if(isset($_POST['simpanbaru'])){
-                $session->pesan("Pelayanan {$name} berhasil di tambah");
-                redirect_to("tambah_pelayanan.php");
-            }
-        }else{
-            $message = "Gagal menambah pelayanan : " . mysql_error();
-        }
+        }catch(PDOException $e){
+            $message = "Gagal menambah pelayanan";
+            error_notice($e);
+        } 
     }else
-        $message = "Gagal menambah pelayanan : " . mysql_error();
+        $message = "Gagal menambah pelayanan";
 }
 
 

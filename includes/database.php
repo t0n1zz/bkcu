@@ -3,46 +3,27 @@ require_once(folder.ds."constants.php");
 
 class MySQLDatabase {
 	
-	private $connection;
-	private $magic_quotes_active;
-	private $real_escape_string_exist;
-
-	public $query_terakhir;
+	public  $dbh;
+	private $host = DB_SERVER;
+	private $dbname = DB_NAME;
+	private $stmt;
 
 	function __construct(){
 		$this->open_connection();
-		$this->magic_quotes_active = get_magic_quotes_gpc();
-		$this->real_escape_string_exist = function_exists("mysql_real_escape_string");
 	}
-	
-	private function confirm_query($result){
-		if(!$result){
-			$output = "Database query failed: " . mysql_error() . "<br />";
-			$output .="Query terakhir adalah:" . $this->query_terakhir;
-			die($output);
-		}
-	}
-	
-	public function escape_value($value){
-		if($this->real_escape_string_exist){
-			if($this->magic_quotes_active){ $value = stripslashes( $value ); }
-			$value = mysql_real_escape_string($value);
-		} else {
-			if(!$this->magic_quotes_active){ $value = addslashes( $value ); }
-		}
-		return $value;
-	}
+
 	
 	public function open_connection(){
-		$this->connection = mysql_connect(DB_SERVER,DB_USER,DB_PASS);
-		if(!$this->connection){
-			die("Datbase connection failed: " . mysql_error());
-		}else{
-			$db_select = mysql_select_db(DB_NAME,$this->connection);
-			if(!$db_select){
-				die("Database selection failed: " . mysql_error());
-			}
-		}
+		$dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->dbname;
+		$options = array(
+		    PDO::ATTR_PERSISTENT => true, 
+		    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+		);
+		try {
+		    $this->dbh = new PDO($dsn,DB_USER,DB_PASS, $options);
+		}catch(PDOException $e){
+	        error_notice($e);
+	    }  
 	}
 	
 	public function close_connection(){
@@ -52,28 +33,69 @@ class MySQLDatabase {
 		}
 	}
 	
-	public function query($sql){
-		$this->query_terakhir = $sql;
-		$result = mysql_query($sql, $this->connection);
-		$this->confirm_query($result);
-		return $result;
+	public function query($query){
+	    $this->stmt = $this->dbh->prepare($query);
 	}
 
-	public function fetch_array($result){
-		return mysql_fetch_array($result);
+	public function bind($param, $value, $type = null){
+	    if (is_null($type)) {
+	        switch (true) {
+	            case is_int($value):
+	                $type = PDO::PARAM_INT;
+	                break;
+	            case is_bool($value):
+	                $type = PDO::PARAM_BOOL;
+	                break;
+	            case is_null($value):
+	                $type = PDO::PARAM_NULL;
+	                break;
+	            default:
+	                $type = PDO::PARAM_STR;
+	        }
+	    }
+	    $this->stmt->bindValue($param, $value, $type);
 	}
 
-	public function num_rows($result){
-		return mysql_num_rows($result);
+	public function execute(){
+	    return $this->stmt->execute();
 	}
 
-	public function insert_id(){
-		return mysql_insert_id($this->connection);
+	public function fetchAll(){
+	    return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 
-	public function affected_rows(){
-		return mysql_affected_rows($this->connection);
+	public function fetch(){
+	    return $this->stmt->fetch(PDO::FETCH_ASSOC);
 	}
+
+	public function fetchColumn(){
+	    return $this->stmt->fetchColumn(PDO::FETCH_ASSOC);
+	}
+
+	public function rowCount(){
+	    return $this->stmt->rowCount();
+	}
+
+	public function lastInsertId(){
+	    return $this->dbh->lastInsertId();
+	}
+
+	public function beginTransaction(){
+	    return $this->dbh->beginTransaction();
+	}
+
+	public function endTransaction(){
+	    return $this->dbh->commit();
+	}
+
+	public function cancelTransaction(){
+	    return $this->dbh->rollBack();
+	}
+
+	public function debugDumpParams(){
+	    return $this->stmt->debugDumpParams();
+	}
+
 }
 
 $database = new MySQLDatabase();

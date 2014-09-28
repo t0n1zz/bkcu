@@ -202,8 +202,9 @@ if(isset($_POST['batal'])){
                             <select class="form-control" onChange="changeFunc(value);" name="kategori">
                             <option >Pilih Kategori Artikel</option>
                             <?php
-                                $result = $database->query("select * from ". kategori_artikel::$nama_tabel);
-                                while($row =$database->fetch_array($result)){
+                                $database->query("select * from ". kategori_artikel::$nama_tabel);
+                                $database->execute();
+                                while($row =$database->fetch()){
                                     $output = "<option value=\"{$row['id']}\"";
                                     if($sel_artikel['kategori'] == $row['id'])
                                         $output .=" selected ";

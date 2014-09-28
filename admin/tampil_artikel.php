@@ -20,31 +20,47 @@ if(isset($_POST['btnkategori'])){
     $artikel->id = $_POST['id3artikel'];
     $artikel->kategori = $_POST['kategori'];
 
-    if($artikel->update_kategori()){
-        $session->pesan("Berhasil mengubah kategori");
-        redirect_to("tampil_artikel.php");
-    }else
-        $message = "Gagal mengubah kategori : " . mysql_error();
+    try{
+        if($artikel->update_kategori()){
+            $session->pesan("Berhasil mengubah kategori");
+            redirect_to("tampil_artikel.php");
+        }else
+            $message = "Gagal mengubah kategori";
+    }catch(PDOException $e){
+        error_notice($e);
+        $message = "Gagal mengubah kategori";
+    }  
 }
 
 if(isset($_POST['btnstatus'])){
     $artikel->id = $_POST['idartikel'];
     $artikel->status = $_POST['status'];
 
-    if($artikel->update_status()){
-        $session->pesan("Berhasil mengubah status");
-        redirect_to("tampil_artikel.php");
-    }else
-        $message = "Gagal mengubah status : " . mysql_error();
+    try{
+        if($artikel->update_status()){
+            $session->pesan("Berhasil mengubah status");
+            redirect_to("tampil_artikel.php");
+        }else
+            $message = "Gagal mengubah status";
+    }catch(PDOException $e){
+        error_notice($e);
+        $message = "Gagal mengubah status";
+    }  
 }
 
 if(isset($_POST['btnhapus'])){
     $artikel->id = $_POST['id2artikel'];
-    if($artikel->delete()){
-        $session->pesan("Berhasil menghapus artikel");
-        redirect_to("tampil_artikel.php");
-    }else
-        $message = "Gagal menghapus artikel : " . mysql_error();
+
+    try{
+        if($artikel->delete()){
+            $session->pesan("Berhasil menghapus artikel");
+            redirect_to("tampil_artikel.php");
+        }else
+            $message = "Gagal menghapus artikel";
+    }catch(PDOException $e){
+        error_notice($e);
+        $message = "Gagal menghapus artikel";
+    } 
 }
  
 ?>
@@ -170,15 +186,22 @@ if(isset($_POST['btnhapus'])){
                         <?php
                             $y = "";
 
-                            $sql_tampil = "SELECT * FROM " . artikel::$nama_tabel;
+                            $sql_tampil = "SELECT ar.id,ar.judul,ar.content,ar.status,ar.kategori,ar.penulis,ar.tanggal,";
+                            $sql_tampil .="k.id as kid,k.name as kname,ad.id as adid,ad.name as adname"; 
+                            $sql_tampil .=" FROM " . artikel::$nama_tabel. " ar ";
+                            $sql_tampil .=" LEFT JOIN " .kategori_artikel::$nama_tabel. " k ";
+                            $sql_tampil .=" ON ar.kategori = k.id";
+                            $sql_tampil .=" LEFT JOIN " .admin::$nama_tabel. " ad ";
+                            $sql_tampil .=" ON ar.penulis = ad.id";
 
                             if(isset($_GET['kategori'])){
                                 $kategori_id = $_GET['kategori'];
                                 $sql_tampil .=" WHERE kategori='" .$kategori_id. "'";
                             }
 
-                            $result = $database->query($sql_tampil);
-                            while($row = $database->fetch_array($result)){
+                           $database->query($sql_tampil);
+                           $database->execute();
+                            while($row = $database->fetch()){
                                $output = "<tr>";
                                     if(!empty($row['id']))
                                         $output .="<td><a data-toggle=\"tooltip\" data-placement=\"top\" 
@@ -204,23 +227,19 @@ if(isset($_POST['btnhapus'])){
                                     }else
                                         $output .="<td>-</td>";
 
-                                    $kategori->id = $row['kategori'];
-                                    $sel_kategori = $kategori->get_subject_by_id();
-                                    if(!empty($sel_kategori))
+                                    if(!empty($row['kid'])) 
                                        $output .="<td><a href=\"#\" class=\"modal3\"
                                                         data-toggle=\"tooltip\" data-placement=\"top\" 
                                                         title=\"Tekan untuk mengubah kategori artikel ini\"  
-                                                        name={$row['id']}>{$sel_kategori['name']}</a></td>";
+                                                        name={$row['id']}>{$row['kname']}</a></td>";
                                     else
                                        $output .="<td><a href=\"#\" class=\"modal3\"
                                                         data-toggle=\"tooltip\" data-placement=\"top\" 
                                                         title=\"Tekan untuk mengubah kategori artikel ini\"  
                                                         name={$row['id']}>Tak Terkategori</a></td>";
 
-                                    $admin->id = $row['penulis'];
-                                    $sel_penulis =$admin->get_subject_by_id();
-                                    if(!empty($sel_penulis))        
-                                       $output .="<td>{$sel_penulis['name']}</td>";
+                                    if(!empty($row['penulis']))        
+                                       $output .="<td>{$row['adname']}</td>";
                                     else
                                        $output .="<td>-</td>";
 
@@ -351,8 +370,9 @@ if(isset($_POST['btnhapus'])){
                     <select class="form-control" name="kategori">
                             <option >Pilih Kategori Artikel</option>
                             <?php
-                                $result = $database->query("select * from ". kategori_artikel::$nama_tabel);
-                                while($row =$database->fetch_array($result)){
+                                $database->query("select * from ". kategori_artikel::$nama_tabel);
+                                $database->execute();
+                                while($row =$database->fetch()){
                                     $output = "<option value=\"{$row['id']}\">{$row['name']}</option>";
                                     echo $output;
                                 }

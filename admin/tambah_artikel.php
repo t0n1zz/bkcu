@@ -39,7 +39,8 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
         $entity_content = htmlentities($content);
         $entity_content = stripslashes(str_replace('\r\n', '',$entity_content));
         $artikel->content = $entity_content;
-        
+    
+    try{
         if($_POST['kategori'] == "tambah"){
             $kategori->name = $_POST['kategori_baru'];
             if($kategori->validasi_duplikat()){
@@ -56,10 +57,10 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
                             redirect_to("tambah_artikel.php");
                         }
                     }else{
-                        $message = "Gagal menambah artikel : " . mysql_error();
+                        $message = "Gagal menambah artikel";
                     }
                 }else{
-                    $message = "Gagal menambah kategori artikel : " . mysql_error();
+                    $message = "Gagal menambah kategori artikel";
                 }
             }else{
                 $message = "Gagal menambah kategori artikel : kategori artikel sudah ada";
@@ -76,11 +77,15 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
                     redirect_to("tambah_artikel.php");
                 }
             }else{
-                $message = "Gagal menambah artikel : " . mysql_error();
+                $message = "Gagal menambah artikel";
             }
-        }       
+        }
+    }catch(PDOException $e){
+        $message = "Gagal menambah artikel";
+        error_notice($e);
+    }       
     }else{
-        $message = "Gagal menambah artikel : " . mysql_error();
+        $message = "Gagal menambah artikel";
     }
 }
 
@@ -207,8 +212,9 @@ if(isset($_POST['batal'])){
                             <select class="form-control" onChange="changeFunc(value);" name="kategori">
                             <option >Pilih Kategori Artikel</option>
                             <?php
-                                $result = $database->query("select * from ". kategori_artikel::$nama_tabel. " WHERE id NOT IN(1)");
-                                while($row =$database->fetch_array($result)){
+                                $database->query("select * from ". kategori_artikel::$nama_tabel. " WHERE id NOT IN(1)");
+                                $database->execute();
+                                while($row =$database->fetch()){
                                     $output = "<option value=\"{$row['id']}\">{$row['name']}</option>";
                                     echo $output;
                                 }

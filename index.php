@@ -40,6 +40,7 @@ if(isset($_POST['kirim'])){
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <title>Puskopdit BKCU Kalimantan</title>
         <meta name="description" content="">
+        <link rel="shortcut icon" href="images/logo.png"> 
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/icomoon-social.css">

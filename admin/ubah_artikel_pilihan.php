@@ -1,74 +1,96 @@
+
 <?php
 require_once("../includes/function.php");
 require_once("../includes/database.php");
 require_once('../includes/session_admin.php');
-require_once("../includes/artikel_pilihan.php");
+require_once("../includes/artikel.php");
+require_once("../includes/kategori_artikel.php");
+require_once("../includes/admin.php");
 
 if(!$session->is_logged_in()){
     $session->pesan("anda harus login terlebih dahulu");
     redirect_to("login.php");
 }
 
-$max_file_size = 5048576;
-$upload_errors = array(
-   // http://www.php.net/manual/en/features.file-upload.errors.php
-  UPLOAD_ERR_OK         => "Tidak Terdapat Error.",
-  UPLOAD_ERR_INI_SIZE   => "Ukuran file melebihi batasan upload php.",
-  UPLOAD_ERR_FORM_SIZE  => "Ukuran file terlalu besar.",
-  UPLOAD_ERR_PARTIAL    => "Partial upload.",
-  UPLOAD_ERR_NO_FILE    => "Tidak ditemukan file.",
-  UPLOAD_ERR_NO_TMP_DIR => "Tidak ditemukan direktori sementara.",
-  UPLOAD_ERR_CANT_WRITE => "Tidak bisa memindahkan file.",
-  UPLOAD_ERR_EXTENSION  => "Upload file terhenti."
-);
+$artikel = new artikel();
+$kategori = new kategori_artikel();
+$thispage = "tambah_artikel";
 
-$artikel_pilihan = new artikel_pilihan();
-$thispage = "ubah_artikel_pilihan";
-
-if(isset($_POST['simpan'])){
+if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
     $errors = array();
-    $field_array = array('judul','content');
+    if($_POST['kategori'] == "tambah"){
+        $field_array = array('judul','content' , 'kategori_baru');
+    }else{
+        $field_array = array('judul','content' , 'kategori');
+    }
     $errors = array_merge($errors, cek_field($field_array,$_POST));
-
+    
     if(empty($errors)){
-        if ($_FILES['upload_file']['error'] == 0 || $_FILES['upload_file']['error'] == 4) {
-            $artikel_pilihan->id = $_POST['id'];
-            $artikel_pilihan->judul = $_POST['judul'];
-            $judul = $_POST['judul'];
-
-            if(!$_FILES['upload_file']['error'] == 4)
-                $artikel_pilihan->upload_gambar($_FILES['upload_file']['tmp_name']);
-
-            $content = $_POST['content'];
-            $entity_content = htmlentities($content);
-            $entity_content = stripslashes(str_replace('\r\n', '',$entity_content));
-            $artikel_pilihan->content = $entity_content;
-
-            $artikel_pilihan->penulis = $_SESSION['bkcu_user'];
-            $artikel_pilihan->status = $_POST['status'];
-
-            date_default_timezone_set('Asia/Jakarta');
-            $dt = time();
-            $waktu = strftime("%Y-%m-%d %H:%M:%S", $dt);
-            $artikel_pilihan->tanggal = $waktu;
-            if($artikel_pilihan->save()){
-                if(isset($_POST['simpan'])){
-                    $session->pesan("Berhasil mengubah artikel pilihan {$judul} ");
-                    redirect_to("tampil_artikel_pilihan.php");
+        date_default_timezone_set('Asia/Jakarta');
+        $dt = time();
+        $waktu = strftime("%Y-%m-%d %H:%M:%S", $dt);
+        $judul = $_POST['judul'];
+        $content = $_POST['content'];
+        $artikel->judul = $judul;
+        $artikel->penulis = $_SESSION['bkcu_user'];
+        $artikel->tanggal = $waktu;
+        $artikel->status = $_POST['status'];
+        
+        $entity_content = htmlentities($content);
+        $entity_content = stripslashes(str_replace('\r\n', '',$entity_content));
+        $artikel->content = $entity_content;
+    
+    try{
+        if($_POST['kategori'] == "tambah"){
+            $kategori->name = $_POST['kategori_baru'];
+            if($kategori->validasi_duplikat()){
+                if($kategori->save()){
+                    $kategori->name = $_POST['kategori_baru'];
+                    $sel_kategori = $kategori->get_kategori();
+                    $artikel->kategori = $sel_kategori['id'];
+                    if($artikel->save()){
+                        if(isset($_POST['simpan'])){
+                            $session->pesan("Artikel {$judul} berhasil di tambah");
+                            redirect_to("tampil_artikel.php");
+                        }
+                        if(isset($_POST['simpanbaru'])){
+                            redirect_to("tambah_artikel.php");
+                        }
+                    }else{
+                        $message = "Gagal menambah artikel";
+                    }
+                }else{
+                    $message = "Gagal menambah kategori artikel";
                 }
             }else{
-                $message = "Gagal mengubah artikel pilihan : " . mysql_error();
+                $message = "Gagal menambah kategori artikel : kategori artikel sudah ada";
             }
         }else{
-            $message = $upload_errors[$error];
+            $artikel->kategori = $_POST['kategori'];
+            if($artikel->save()){
+                if(isset($_POST['simpan'])){
+                    $session->pesan("Artikel {$judul} berhasil di tambah");
+                    redirect_to("tampil_artikel.php");
+                }
+                if(isset($_POST['simpanbaru'])){
+                    $session->pesan("Artikel {$judul} berhasil di tambah");
+                    redirect_to("tambah_artikel.php");
+                }
+            }else{
+                $message = "Gagal menambah artikel";
+            }
         }
-    }else
-        $message = "Gagal mengubah artikel pilihan : " . mysql_error();
+    }catch(PDOException $e){
+        $message = "Gagal menambah artikel";
+        error_notice($e);
+    }       
+    }else{
+        $message = "Gagal menambah artikel";
+    }
 }
 
-
 if(isset($_POST['batal'])){
-    redirect_to("tampil_artikel_pilihan.php");
+    redirect_to("tampil_artikel.php");
 }
 ?>
 <!DOCTYPE html>
@@ -82,7 +104,7 @@ if(isset($_POST['batal'])){
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Puskopdit BKCU Kalimantan Admin Site -- Ubah Artikel Pilihan</title>
+    <title>Puskopdit BKCU Kalimantan Admin Site -- Tambah Artikel</title>
     <link rel="shortcut icon" href="../images/logo.png"> 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -121,21 +143,12 @@ if(isset($_POST['batal'])){
             <?php include_once("component/sidebar.php"); ?>
         </nav>
              
-         <?php
-            if(isset($_GET['artikel'])){
-                $artikel_pilihan->id = $_GET['artikel'];
-                $sel_artikel = $artikel_pilihan->get_subject_by_id();
-            }else{
-                redirect_to("wrong.php");
-            }
-        ?>
-
         <!-- Content -->
         <div id="page-wrapper">
             <!-- header -->
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header"><span class="fa fa-pencil"></span> Ubah Artikel Pilihan</h1>
+                    <h1 class="page-header"><span class="fa fa-plus"></span> Tambah Artikel</h1>
                 </div>           
             </div>
             <!-- /header --> 
@@ -167,14 +180,17 @@ if(isset($_POST['batal'])){
                     }
                 ?>
               <!-- /alert --> 
-                <form role="form" method="post" action="ubah_artikel_pilihan.php?artikel=<?php echo $sel_artikel['id']; ?>" enctype="multipart/form-data">
+                <form role="form" method="post" action="tambah_artikel.php">
                 <div class="panel panel-default">
                     <!--button-->
                     <div class="panel-heading tooltip-demo">
                         <button type="submit" name="simpan" data-toggle="tooltip" data-placement="top" 
                                     title="Menyimpan artikel" class="btn btn-default"><span class="fa fa-save"></span> Simpan</button>
+                        <button type="submit" name="simpanbaru" data-toggle="tooltip" data-placement="top" 
+                                    title="Menyimpan artikel dan memulai menulis artikel baru" 
+                                    class="btn btn-default"><span class="fa fa-save"></span> <span class="fa fa-plus"></span> Simpan dan buat baru</button>
                         <button type="submit" name="batal" data-toggle="tooltip" data-placement="top" 
-                                    title="Batal menambah artikel dan kembali ke halaman Kelola Artikel Pilihan" 
+                                    title="Batal menambah artikel dan kembali ke halaman Kelola Artikel" 
                                     class="btn btn-default"><span class="fa fa-times-circle"></span> Batal</button>
                     </div>
                     <!--/button-->
@@ -183,78 +199,56 @@ if(isset($_POST['batal'])){
                         <!--judul-->
                         <div class="col-lg-10">
                         <div class="form-group">
-                            <label>Judul</label>
-                            <?php
-                                $show_judul = $sel_artikel['judul'];
-                                if(!empty($show_judul))
-                                    echo "<input type=\"text\" name=\"judul\" class=\"form-control\" 
-                                            placeholder=\"Silahkan masukkan judul artikel\" value=\"$show_judul\" />";
-                                else
-                                    echo "<input type=\"text\" name=\"judul\" class=\"form-control\" 
-                                            placeholder=\"Silahkan masukkan judul artikel\" value=\"\" />";
-                            ?>
+                            <label>Judul Artikel</label>
+                            <input type="text" name="judul" class="form-control" 
+                                    placeholder="Silahkan masukkan judul artikel"/>
                         </div>
                         </div>
                         <!--/judul-->
-                        <!--gambar-->
-                        <div class="col-lg-5">
-                        <label>Upload Gambar</label>
-                            <div class="thumbnail">
-                                <img class="img-responsive" src="<?php
-                                            $gambar = $sel_artikel['gambar'];
-                                            $gambar = str_replace(' ', '%20', $gambar);
-                                            if(!empty($gambar) && is_file("../images_pilihan/{$gambar}"))
-                                                echo "../images_pilihan/{$gambar}";
-                                            else
-                                                echo "../images/no_image.jpg";
-                                        ?> "
-                                        id="tampilgambar"
-                                        alt="Generic placeholder image" style="width: 300px;; height: 200px;">
-                             <div class="caption">
-                                <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $max_file_size; ?>" />
-                                <input onChange="readURL(this);" type="file" name="upload_file" 
-                                        accept="image/jpeg" value=<?php
-                                            if(!empty($sel_artikel['gambar']))
-                                                echo $sel_artikel['gambar'];
-                                        ?>
-                                        />
-                             </div>
-                            </div>
+                        <!--kategori-->
+                        <div class="col-lg-4">
+                        <div class="form-group">
+                            <label>Kategori</label>
+                            <select class="form-control" onChange="changeFunc(value);" name="kategori">
+                            <option >Pilih Kategori Artikel</option>
+                            <?php
+                                $database->query("select * from ". kategori_artikel::$nama_tabel. " WHERE id NOT IN(1)");
+                                $database->execute();
+                                while($row =$database->fetch()){
+                                    $output = "<option value=\"{$row['id']}\">{$row['name']}</option>";
+                                    echo $output;
+                                }
+                            ?>
+                            <option value="tambah" >Tambah Kategori Baru</option>
+                            </select>
                         </div>
-                        <!--/gambar-->
+                        </div>
+                        <!--/kategori-->
+                        <!--kategori baru-->
+                        <div class="col-lg-4"  id="pilihan" style="display:none;">
+                        <div class="form-group">
+                            <label>Kategori Baru</label>
+                            <input type="text" class="form-control" 
+                                name="kategori_baru" placeholder="Masukkan Kategori Baru" maxlength="30">
+                        </div>
+                        </div>
+                        <!--/kategori baru-->
                         <!--status-->
                         <div class="col-lg-4">
                         <div class="form-group">
                             <label>Status</label>
                             <select class="form-control" name="status">
-                            <option >Pilih Status Publikasi Artikel</option>
-                            <option 
-                                <?php
-                                    if($sel_artikel['status'] == 0)
-                                        echo " selected";
-                                ?>
-                            >Tidak diterbitkan</option>
-                            <option value="1" 
-                                <?php
-                                if($sel_artikel['status'] == 1)
-                                    echo " selected";
-                                ?>
-                            >Terbitkan</option>
+                                <option >Pilih Status Publikasi Artikel</option>
+                                <option >Tidak diterbitkan</option>
+                                <option value="1" >Terbitkan</option>
                             </select>
                         </div>
                         </div>
                         <!--/status-->
                         <!--content-->
                         <div class="col-lg-12">
-                            <label>Deskripsi</label>
+                            <label>Isi Artikel</label>
                             <textarea name="content" style="height:300px">
-                                <?php
-                                    $show_content = $sel_artikel['content'];
-                                    if(!empty($show_content)){
-                                        $fill_block = html_entity_decode($show_content);
-                                        echo $fill_block;
-                                    }
-                                ?>
                             </textarea>
                         </div>
                         <!--/content-->
@@ -306,6 +300,7 @@ if(isset($_POST['batal'])){
         ],
         file_browser_callback: RoxyFileBrowser
     });
+
 
 
     function RoxyFileBrowser(field_name, url, type, win) {

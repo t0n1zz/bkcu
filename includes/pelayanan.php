@@ -14,6 +14,7 @@ class pelayanan{
 	private $nama_gambar;
 	private $nama_lama;
 	private $temp_path;
+	private $img_extensions;
 	protected $upload_dir="images";
 	
 	private function has_attribute($attribute){
@@ -31,20 +32,11 @@ class pelayanan{
 		return $attributes;
 	}
 	
-	protected function sanitized_attributes(){
-		global $database;
-		$clean_attributes = array();
-		foreach($this->attributes() as $key => $value){
-			$clean_attributes[$key] = $database->escape_value($value);
-		}
-		return $clean_attributes;
-	}
-
 	public static function count_all(){
 		global $database;
 		$sql = "SELECT COUNT(*) FROM " .self::$nama_tabel;
 		$result = $database->query($sql);
-		$row = $database->fetch_array($result);
+		$row = $database->fetch_array();
 		return array_shift($row);
 	}
 
@@ -53,15 +45,19 @@ class pelayanan{
 		global $database;
 		$sql = "SELECT * ";
 		$sql .= "FROM ".self::$nama_tabel;
-		$sql .= " WHERE id=" . $this->id ;
+		$sql .= " WHERE id = :id";
 		$sql .= " LIMIT 1";
+
 		$database->query($sql);
-		$array = $database->fetch_array($database->query($sql));
+		$database->bind(':id',$this->id);
+		$database->execute();
+		$array = $database->fetch();
+
 		return $array; 
 	}
 
 	protected function renamefile(){
-		$name_nospace = str_replace(' ', '', $this->name); 
+		$name_nospace = str_replace(' ', '', $this->judul); 
 		$this->nama_lama = website .ds. $this->upload_dir .ds. $this->gambar;
 		$this->nama_gambar = website .ds. $this->upload_dir .ds. $name_nospace."-" .date('Y-m-d-H-s'). ".jpg";
 		$this->gambar = $name_nospace."-" .date('Y-m-d-H-s'). ".jpg";
@@ -70,31 +66,30 @@ class pelayanan{
 
 	
 	public function upload_gambar($file){
-		$this->temp_path = $file['tmp_name'];
-		$this->gambar = basename($file['name']);
+		$name_nospace = str_replace(' ', '', $this->judul);
+		$this->loadimage($file);
+		if($this->getHeight() > 720)
+            $this->resize(1280,720);
+        $this->gambar = $name_nospace."-" .date('Y-m-d-H-s'). ".jpg";
 	}
 	
 
 	public function save(){
 		if(isset($this->id)){
-			if(!empty($this->gambar) || !empty($this->temp_path)){
+			if(!empty($this->gambar)){
+
 				$sel = $this->get_subject_by_id();
 				$selgambar = $sel['gambar'];
-				$gambarlama = website .ds. $this->upload_dir .ds. $selgambar;
-				if(!unlink($gambarlama) || unlink($gambarlama)){
-					$target = website .ds. $this->upload_dir .ds. $this->gambar;
+				if(!empty($selgambar)){
+					$gambarlama = website .ds. $this->upload_dir .ds. $selgambar;
+					unlink($gambarlama);
+				}
 
-					if(move_uploaded_file($this->temp_path , $target)){
-						$this->renamefile();
-						if($this->update()){
-							unset($this->temp_path);
-							return true;
-						}else{
-							return false;
-						}
-					}else{
-						return false;
-					}
+				$this->saveimage(website .ds. $this->upload_dir .ds. $this->gambar);
+				if($this->update()){
+					return true;
+				}else{
+					return false;
 				}
 			}else{
 				$sel_product = $this->get_subject_by_id();
@@ -103,16 +98,10 @@ class pelayanan{
 				return true;
 			}
 		}else{
-			if(!empty($this->gambar) || !empty($this->temp_path)){
-				$target = website .ds. $this->upload_dir .ds. $this->gambar;
-				if(move_uploaded_file($this->temp_path , $target)){
-					$this->renamefile();
-					if($this->create()){
-						unset($this->temp_path);
-						return true;
-					}else{
-						return false;
-					}
+			if(!empty($this->gambar)){
+				$this->saveimage(website .ds. $this->upload_dir .ds. $this->gambar);
+				if($this->create()){
+					return true;
 				}else{
 					return false;
 				}
@@ -123,17 +112,32 @@ class pelayanan{
 		}
 	}
 						
+	var $image; 
+	var $image_type;
+
 	public function create(){
 		global $database;
-		$attributes = $this->sanitized_attributes();
+		$attributes = $this->attributes();
+
+		$attribute_pairs = array();
+	    foreach($attributes as $key => $value){
+	        $attribute_pairs[] = ":{$key}";
+	    }
 		
 		$sql = "INSERT INTO " .self::$nama_tabel." (" ;
 		$sql .= join(", ", array_keys($attributes));
-		$sql .=")VALUES('";
-		$sql .= join("', '", array_values($attributes));
-		$sql .= "')";
-		if($database->query($sql)){
-			$this->id_kategori = $database->insert_id();
+		$sql .=")VALUES(";
+		$sql .= join(", ", $attribute_pairs);
+		$sql .= ")";
+
+		$database->query($sql);
+
+		foreach($attributes as $key => $value){
+	        $database->bind(":$key", $value);
+	    }
+
+		if($database->execute()){
+			$this->id = $database->lastInsertId();
 			return true;
 		}else{
 			return false;
@@ -142,37 +146,119 @@ class pelayanan{
 	
 	public function update(){
 		global $database;
-		$attributes = $this->sanitized_attributes();
+		$attributes = $this->attributes();
+
 		$attribute_pairs = array();
 		foreach($attributes as $key => $value){
-			$attribute_pairs[] = "{$key}='{$value}'";
+			$attribute_pairs[] = "{$key}=:{$key}";
 		}
 			
 		$sql ="UPDATE " .self::$nama_tabel." SET ";
 		$sql .= join(", ", $attribute_pairs);
-		$sql .=" WHERE id=" . $database->escape_value($this->id);
+		$sql .=" WHERE id = :id";
+
 		$database->query($sql);
+		$database->bind(':id', $this->id);
+
+		foreach($attributes as $key => $value){
+	        $database->bind(":$key", $value);
+	    }
 		
-		return($database->affected_rows() == 1) ? true : false;
+		return $database->execute();
 	}
 
 	public function delete(){
 		global $database;
-		
-		$sql = "DELETE FROM " .self::$nama_tabel;
-		$sql .= " WHERE id=". $database->escape_value($this->id);
-		$sql .= " LIMIT 1";
-		$database->query($sql);
-		
-		if(!empty($this->gambar)){
-			$target = website .ds. $this->upload_dir .ds. $this->gambar;
-			unlink($target);
+
+		$sel = $this->get_subject_by_id();
+		$selgambar = $sel['gambar'];
+		if(!empty($selgambar)){
+			$gambarlama = website .ds. $this->upload_dir .ds. $selgambar;
+			unlink($gambarlama);
 		}
 		
-		return($database->affected_rows() == 1) ? true : false;
+		$sql = "DELETE FROM " .self::$nama_tabel;
+		$sql .= " WHERE id = :id";
+		$sql .= " LIMIT 1";
+
+		$database->query($sql);
+		$database->bind(':id',$this->id);
+		
+		return $database->execute();
 	}
 
+	function loadimage($filename) {   
+		$image_info = getimagesize($filename); 
+		$this->image_type = $image_info[2]; 
+		if( $this->image_type == IMAGETYPE_JPEG ) {   
+			$this->image = imagecreatefromjpeg($filename);
+			$this->img_extensions = ".jpg"; 
+		} elseif( $this->image_type == IMAGETYPE_GIF ) {   
+			$this->image = imagecreatefromgif($filename);
+			$this->img_extensions = ".gif";  
+		} elseif( $this->image_type == IMAGETYPE_PNG ) {   
+			$this->image = imagecreatefrompng($filename); 
+			$this->img_extensions = ".png"; 
+		} 
+	} 
 
+	function saveimage($filename, $image_type=IMAGETYPE_JPEG, $compression=75, $permissions=null) 
+	{   
+		if( $image_type == IMAGETYPE_JPEG ) { 
+			imagejpeg($this->image,$filename,$compression); 
+		} elseif( $image_type == IMAGETYPE_GIF ) {   
+			imagegif($this->image,$filename); 
+		} elseif( $image_type == IMAGETYPE_PNG ) {   
+			imagepng($this->image,$filename); 
+		} 
+
+		if( $permissions != null) {   
+			chmod($filename,$permissions); 
+		} 
+	} 
+
+	function output($image_type=IMAGETYPE_JPEG) {   
+		if( $image_type == IMAGETYPE_JPEG ) { 
+			imagejpeg($this->image); 
+		} elseif( $image_type == IMAGETYPE_GIF ) {   
+			imagegif($this->image); 
+		} elseif( $image_type == IMAGETYPE_PNG ) {   
+			imagepng($this->image); 
+		} 
+	} 
+
+	function getWidth() {   
+		return imagesx($this->image); 
+	} 
+
+	function getHeight() {   
+		return imagesy($this->image); 
+	} 
+
+	function resizeToHeight($height) {   
+		$ratio = $height / $this->getHeight(); 
+		$width = $this->getWidth() * $ratio; 
+		$this->resize($width,$height); 
+	}   
+
+	function resizeToWidth($width) { 
+		$ratio = $width / $this->getWidth(); 
+		$height = $this->getheight() * $ratio; 
+		$this->resize($width,$height); 
+	}   
+
+	function scale($scale) { 
+		$width = $this->getWidth() * $scale/100; 
+		$height = $this->getheight() * $scale/100; 
+		$this->resize($width,$height); 
+	}   
+
+	function resize($width,$height) { 
+		$new_image = imagecreatetruecolor($width, $height); 
+		imagecopyresampled($new_image, $this->image, 0, 0, 0, 0, $width, 
+						   $height, $this->getWidth(), $this->getHeight()); 
+		$this->image = $new_image;
+	} 
 }
 
 ?>

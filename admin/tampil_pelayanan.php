@@ -18,11 +18,16 @@ if(isset($_POST['btnhapus'])){
     $pelayanan->id = $_POST['id2artikel'];
     $sel_pelayanan = $pelayanan->get_subject_by_id();
     $pelayanan->gambar = $sel_pelayanan['gambar'];
-    if($pelayanan->delete()){
-        $session->pesan("Berhasil menghapus informasi layanan");
-        redirect_to("tampil_pelayanan.php");
-    }else
-        $message = "Gagal menghapus informasi layanan : " . mysql_error();
+    try{
+        if($pelayanan->delete()){
+            $session->pesan("Berhasil menghapus informasi layanan");
+            redirect_to("tampil_pelayanan.php");
+        }else
+            $message = "Gagal menghapus informasi layanan";
+    }catch(PDOException $e){
+        $message = "Gagal menghapus informasi layanan";
+        error_notice($e);
+    }   
 }
  
 ?>
@@ -69,11 +74,11 @@ if(isset($_POST['btnhapus'])){
         <!-- Navigation -->
         <nav class="navbar navbar-default  navbar-static-top " role="navigation" style="margin-bottom: 0">
             <?php include_once("component/header.php"); ?>
-			<?php include_once("component/sidebar.php"); ?>
+            <?php include_once("component/sidebar.php"); ?>
         </nav>
-		<!-- Content -->
+        <!-- Content -->
         <div id="page-wrapper">
-       	<!-- header -->
+        <!-- header -->
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header"><span class="fa fa-archive"></span> Kelola Pelayanan</h1>
@@ -141,8 +146,9 @@ if(isset($_POST['btnhapus'])){
 
                             $sql_tampil = "SELECT * FROM " . pelayanan::$nama_tabel;
 
-                            $result = $database->query($sql_tampil);
-                            while($row = $database->fetch_array($result)){
+                            $database->query($sql_tampil);
+                            $database->execute();
+                            while($row = $database->fetch()){
                                $output = "<tr>";
                                     if(!empty($row['id']))
 

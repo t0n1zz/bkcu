@@ -9,7 +9,19 @@ if(!$session->is_logged_in()){
     redirect_to("login.php");
 }
 
-$max_file_size = 1048576;
+$max_file_size = 5048576;
+$upload_errors = array(
+   // http://www.php.net/manual/en/features.file-upload.errors.php
+  UPLOAD_ERR_OK         => "Tidak Terdapat Error.",
+  UPLOAD_ERR_INI_SIZE   => "Ukuran file melebihi batasan upload php.",
+  UPLOAD_ERR_FORM_SIZE  => "Ukuran file terlalu besar.",
+  UPLOAD_ERR_PARTIAL    => "Partial upload.",
+  UPLOAD_ERR_NO_FILE    => "Tidak ditemukan file.",
+  UPLOAD_ERR_NO_TMP_DIR => "Tidak ditemukan direktori sementara.",
+  UPLOAD_ERR_CANT_WRITE => "Tidak bisa memindahkan file.",
+  UPLOAD_ERR_EXTENSION  => "Upload file terhenti."
+);
+
 
 $pelayanan = new pelayanan();
 $thispage = "pelayanan";
@@ -20,31 +32,40 @@ if(isset($_POST['simpan'])){
     $errors = array_merge($errors, cek_field($field_array,$_POST));
 
     if(empty($errors)){
-        $pelayanan->id = $_POST['id'];  
-        $pelayanan->name = $_POST['name'];
-        $name = $_POST['name'];
-        $pelayanan->upload_gambar($_FILES['upload_file']);
+        $error = $_FILES['upload_file']['error'];
+        if ($error != 1) {
+            $pelayanan->id = $_POST['id'];  
+            $pelayanan->name = $_POST['name'];
+            $name = $_POST['name'];
+            $pelayanan->upload_gambar($_FILES['upload_file']['tmp_name']);
 
-        $content = $_POST['content'];
-        $entity_content = htmlentities($content);
-        $entity_content = stripslashes(str_replace('\r\n', '',$entity_content));
-        $pelayanan->content = $entity_content;
+            $content = $_POST['content'];
+            $entity_content = htmlentities($content);
+            $entity_content = stripslashes(str_replace('\r\n', '',$entity_content));
+            $pelayanan->content = $entity_content;
 
-        date_default_timezone_set('Asia/Jakarta');
-        $dt = time();
-        $waktu = strftime("%Y-%m-%d %H:%M:%S", $dt);
-        $pelayanan->tanggal = $waktu;
-
-        if($pelayanan->save()){
-            if(isset($_POST['simpan'])){
-                $session->pesan("Berhasil mengubah informasi pelayanan : {$name}");
-                redirect_to("tampil_pelayanan.php");
-            }
+            date_default_timezone_set('Asia/Jakarta');
+            $dt = time();
+            $waktu = strftime("%Y-%m-%d %H:%M:%S", $dt);
+            $pelayanan->tanggal = $waktu;
+            try{
+                if($pelayanan->save()){
+                    if(isset($_POST['simpan'])){
+                        $session->pesan("Berhasil mengubah informasi pelayanan : {$name}");
+                        redirect_to("tampil_pelayanan.php");
+                    }
+                }else{
+                    $message = "Gagal mengubah informasi pelayanan";
+                }
+            }catch(PDOException $e){
+                $message = "Gagal mengubah informasi pelayanan";
+                error_notice($e);
+            } 
         }else{
-            $message = "Gagal mengubah informasi pelayanan : " . mysql_error();
+            $message = $upload_errors[$error];
         }
     }else
-        $message = "Gagal mengubah informasi pelayanan : " . mysql_error();
+        $message = "Gagal mengubah informasi pelayanan";
 }
 
 

@@ -6,6 +6,7 @@ defined('ds') ? null : define('ds', DIRECTORY_SEPARATOR);
 defined('website') ? null :
 	define('website', ds. 'xampp' .ds. 'htdocs' .ds. 'bkcu');
 
+
 /*
 defined('website') ? null :
 	define('website', ds. 'home' .ds. 'puskopdi' .ds. 'public_html');
@@ -75,5 +76,16 @@ function get_all_subjects(){
 	$subject_set = mysql_query($query,$connection);
 	confirm_query($subject_set);
 	return $subject_set;
+}
+
+function error_notice($e){
+	date_default_timezone_set('Asia/Jakarta');
+    $dt = time();
+    $waktu = strftime("%Y-%m-%d %H:%M:%S", $dt);
+    
+    $bt = debug_backtrace();
+		$caller = array_shift($bt);
+
+	file_put_contents("PDOerror.txt",$waktu. ":" .$e->getMessage(). " in " .$caller['file']. " line " .$caller['line']. "\n", FILE_APPEND);
 }
 ?>
