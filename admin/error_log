@@ -1,0 +1,103 @@
+[05-Sep-2014 07:52:41 UTC] PHP Warning:  require_once(/xampp/htdocs/bkcu-new/includes/constants.php): failed to open stream: No such file or directory in /home/puskopdi/public_html/includes/database.php on line 2
+[05-Sep-2014 07:52:41 UTC] PHP Fatal error:  require_once(): Failed opening required '/xampp/htdocs/bkcu-new/includes/constants.php' (include_path='.:/opt/alt/php54/usr/share/pear:/opt/alt/php54/usr/share/php') in /home/puskopdi/public_html/includes/database.php on line 2
+[05-Sep-2014 07:52:46 UTC] PHP Warning:  require_once(/xampp/htdocs/bkcu-new/includes/constants.php): failed to open stream: No such file or directory in /home/puskopdi/public_html/includes/database.php on line 2
+[05-Sep-2014 07:52:46 UTC] PHP Fatal error:  require_once(): Failed opening required '/xampp/htdocs/bkcu-new/includes/constants.php' (include_path='.:/opt/alt/php54/usr/share/pear:/opt/alt/php54/usr/share/php') in /home/puskopdi/public_html/includes/database.php on line 2
+[05-Sep-2014 15:26:00 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[08-Sep-2014 03:35:28 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[08-Sep-2014 03:39:48 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[08-Sep-2014 03:41:01 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[08-Sep-2014 03:46:25 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[08-Sep-2014 04:04:21 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[08-Sep-2014 04:32:49 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[08-Sep-2014 17:40:08 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[08-Sep-2014 18:49:26 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[08-Sep-2014 19:26:11 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[08-Sep-2014 19:27:48 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[09-Sep-2014 08:55:47 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[09-Sep-2014 08:59:20 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[09-Sep-2014 02:22:15 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[09-Sep-2014 09:41:31 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[09-Sep-2014 09:42:15 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[09-Sep-2014 09:42:55 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[09-Sep-2014 09:43:47 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[09-Sep-2014 09:44:11 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[09-Sep-2014 09:47:14 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[09-Sep-2014 13:48:13 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[11-Sep-2014 03:04:50 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[11-Sep-2014 03:08:52 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[11-Sep-2014 10:17:35 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[11-Sep-2014 10:18:14 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[11-Sep-2014 10:21:02 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[11-Sep-2014 10:22:05 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[12-Sep-2014 09:13:36 Asia/Jakarta] PHP Notice:  Undefined index: gambar in /home/puskopdi/public_html/includes/artikel.php on line 134
+[12-Sep-2014 02:19:07 UTC] PHP Notice:  Undefined index: wilayah in /home/puskopdi/public_html/admin/tampil_cuprimer.php on line 17
+[17-Sep-2014 01:16:05 UTC] PHP Fatal error:  Call to undefined method cuprimer::count_wilayah() in /home/puskopdi/public_html/admin/tampil_wilayah.php on line 202
+[17-Sep-2014 01:17:17 UTC] PHP Fatal error:  Call to undefined method cuprimer::count_wilayah() in /home/puskopdi/public_html/admin/tampil_wilayah.php on line 202
+[17-Sep-2014 01:27:13 UTC] PHP Fatal error:  Call to undefined method cuprimer::count_wilayah() in /home/puskopdi/public_html/admin/tampil_wilayah.php on line 202
+[17-Sep-2014 06:57:58 UTC] PHP Fatal error:  Call to undefined method cuprimer::count_wilayah() in /home/puskopdi/public_html/admin/tampil_wilayah.php on line 202
+[19-Sep-2014 00:25:47 UTC] PHP Notice:  Undefined index: akses_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 30
+[19-Sep-2014 00:25:47 UTC] PHP Notice:  Undefined index: tambah_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 31
+[19-Sep-2014 00:25:47 UTC] PHP Notice:  Undefined index: ubah_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 32
+[19-Sep-2014 00:25:47 UTC] PHP Notice:  Undefined index: ubah_status_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 33
+[19-Sep-2014 00:25:47 UTC] PHP Notice:  Undefined index: hapus_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 34
+[19-Sep-2014 00:25:47 UTC] PHP Notice:  Undefined index: akses_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 35
+[19-Sep-2014 00:25:47 UTC] PHP Notice:  Undefined index: tambah_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 36
+[19-Sep-2014 00:25:47 UTC] PHP Notice:  Undefined index: ubah_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 37
+[19-Sep-2014 00:25:47 UTC] PHP Notice:  Undefined index: hapus_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 38
+[19-Sep-2014 00:25:47 UTC] PHP Notice:  Undefined index: akses_admin in /home/puskopdi/public_html/admin/tambah_admin.php on line 39
+[19-Sep-2014 00:26:11 UTC] PHP Notice:  Undefined index: akses_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 30
+[19-Sep-2014 00:26:11 UTC] PHP Notice:  Undefined index: tambah_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 31
+[19-Sep-2014 00:26:11 UTC] PHP Notice:  Undefined index: ubah_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 32
+[19-Sep-2014 00:26:11 UTC] PHP Notice:  Undefined index: ubah_status_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 33
+[19-Sep-2014 00:26:11 UTC] PHP Notice:  Undefined index: hapus_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 34
+[19-Sep-2014 00:26:11 UTC] PHP Notice:  Undefined index: akses_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 35
+[19-Sep-2014 00:26:11 UTC] PHP Notice:  Undefined index: tambah_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 36
+[19-Sep-2014 00:26:11 UTC] PHP Notice:  Undefined index: ubah_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 37
+[19-Sep-2014 00:26:11 UTC] PHP Notice:  Undefined index: hapus_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 38
+[19-Sep-2014 00:26:11 UTC] PHP Notice:  Undefined index: akses_admin in /home/puskopdi/public_html/admin/tambah_admin.php on line 39
+[19-Sep-2014 01:12:56 UTC] PHP Notice:  Undefined index: akses_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 30
+[19-Sep-2014 01:12:56 UTC] PHP Notice:  Undefined index: tambah_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 31
+[19-Sep-2014 01:12:56 UTC] PHP Notice:  Undefined index: ubah_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 32
+[19-Sep-2014 01:12:56 UTC] PHP Notice:  Undefined index: ubah_status_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 33
+[19-Sep-2014 01:12:56 UTC] PHP Notice:  Undefined index: hapus_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 34
+[19-Sep-2014 01:12:56 UTC] PHP Notice:  Undefined index: akses_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 35
+[19-Sep-2014 01:12:56 UTC] PHP Notice:  Undefined index: tambah_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 36
+[19-Sep-2014 01:12:56 UTC] PHP Notice:  Undefined index: ubah_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 37
+[19-Sep-2014 01:12:56 UTC] PHP Notice:  Undefined index: hapus_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 38
+[19-Sep-2014 01:12:56 UTC] PHP Notice:  Undefined index: akses_admin in /home/puskopdi/public_html/admin/tambah_admin.php on line 39
+[19-Sep-2014 01:40:00 UTC] PHP Notice:  Undefined index: akses_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 30
+[19-Sep-2014 01:40:00 UTC] PHP Notice:  Undefined index: tambah_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 31
+[19-Sep-2014 01:40:00 UTC] PHP Notice:  Undefined index: ubah_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 32
+[19-Sep-2014 01:40:00 UTC] PHP Notice:  Undefined index: ubah_status_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 33
+[19-Sep-2014 01:40:00 UTC] PHP Notice:  Undefined index: hapus_artikel in /home/puskopdi/public_html/admin/tambah_admin.php on line 34
+[19-Sep-2014 01:40:00 UTC] PHP Notice:  Undefined index: akses_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 35
+[19-Sep-2014 01:40:00 UTC] PHP Notice:  Undefined index: tambah_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 36
+[19-Sep-2014 01:40:00 UTC] PHP Notice:  Undefined index: ubah_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 37
+[19-Sep-2014 01:40:00 UTC] PHP Notice:  Undefined index: hapus_kategori in /home/puskopdi/public_html/admin/tambah_admin.php on line 38
+[19-Sep-2014 01:40:00 UTC] PHP Notice:  Undefined index: akses_admin in /home/puskopdi/public_html/admin/tambah_admin.php on line 39
+[20-Sep-2014 08:26:12 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[21-Sep-2014 06:38:43 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[22-Sep-2014 06:24:56 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[22-Sep-2014 07:24:42 UTC] PHP Notice:  Undefined index: website in /home/puskopdi/public_html/admin/ubah_cuprimer.php on line 29
+[22-Sep-2014 07:31:08 UTC] PHP Notice:  Undefined index: website in /home/puskopdi/public_html/admin/ubah_cuprimer.php on line 29
+[22-Sep-2014 07:33:01 UTC] PHP Notice:  Undefined index: website in /home/puskopdi/public_html/admin/ubah_cuprimer.php on line 29
+[22-Sep-2014 14:33:02 Asia/Jakarta] PHP Notice:  Undefined variable: judul in /home/puskopdi/public_html/admin/ubah_cuprimer.php on line 66
+[22-Sep-2014 14:37:09 Asia/Jakarta] PHP Notice:  Undefined variable: judul in /home/puskopdi/public_html/admin/ubah_cuprimer.php on line 65
+[22-Sep-2014 14:39:18 Asia/Jakarta] PHP Notice:  Undefined variable: judul in /home/puskopdi/public_html/admin/ubah_cuprimer.php on line 65
+[22-Sep-2014 14:39:53 Asia/Jakarta] PHP Notice:  Undefined variable: judul in /home/puskopdi/public_html/admin/ubah_cuprimer.php on line 65
+[22-Sep-2014 14:40:56 Asia/Jakarta] PHP Notice:  Undefined variable: judul in /home/puskopdi/public_html/admin/ubah_cuprimer.php on line 65
+[22-Sep-2014 08:32:56 UTC] PHP Parse error:  syntax error, unexpected '==' (T_IS_EQUAL), expecting ')' in /home/puskopdi/public_html/admin/tampil_kegiatan.php on line 174
+[22-Sep-2014 08:33:01 UTC] PHP Parse error:  syntax error, unexpected '==' (T_IS_EQUAL), expecting ')' in /home/puskopdi/public_html/admin/tampil_kegiatan.php on line 174
+[22-Sep-2014 08:34:14 UTC] PHP Parse error:  syntax error, unexpected '==' (T_IS_EQUAL), expecting ')' in /home/puskopdi/public_html/admin/tampil_kegiatan.php on line 174
+[22-Sep-2014 08:34:25 UTC] PHP Parse error:  syntax error, unexpected '==' (T_IS_EQUAL), expecting ')' in /home/puskopdi/public_html/admin/tampil_kegiatan.php on line 174
+[22-Sep-2014 08:36:14 UTC] PHP Parse error:  syntax error, unexpected '==' (T_IS_EQUAL), expecting ')' in /home/puskopdi/public_html/admin/tampil_kegiatan.php on line 174
+[22-Sep-2014 08:37:21 UTC] PHP Parse error:  syntax error, unexpected '==' (T_IS_EQUAL), expecting ')' in /home/puskopdi/public_html/admin/tampil_kegiatan.php on line 174
+[22-Sep-2014 08:39:22 UTC] PHP Parse error:  syntax error, unexpected '==' (T_IS_EQUAL), expecting ')' in /home/puskopdi/public_html/admin/tampil_kegiatan.php on line 174
+[22-Sep-2014 08:40:08 UTC] PHP Parse error:  syntax error, unexpected '==' (T_IS_EQUAL), expecting ')' in /home/puskopdi/public_html/admin/tampil_kegiatan.php on line 174
+[22-Sep-2014 08:42:07 UTC] PHP Parse error:  syntax error, unexpected '==' (T_IS_EQUAL), expecting ')' in /home/puskopdi/public_html/admin/tampil_kegiatan.php on line 174
+[22-Sep-2014 08:42:20 UTC] PHP Parse error:  syntax error, unexpected '==' (T_IS_EQUAL), expecting ')' in /home/puskopdi/public_html/admin/tampil_kegiatan.php on line 174
+[23-Sep-2014 02:16:09 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[23-Sep-2014 11:52:09 Asia/Jakarta] PHP Notice:  Undefined index: user_id in /home/puskopdi/public_html/admin/tampil_pengumuman.php on line 28
+[28-Sep-2014 01:08:10 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[28-Sep-2014 01:08:20 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
+[28-Sep-2014 01:09:09 UTC] PHP Notice:  Undefined variable: sel_artikel in /home/puskopdi/public_html/admin/tambah_artikel.php on line 193
