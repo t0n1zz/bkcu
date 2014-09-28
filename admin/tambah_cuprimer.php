@@ -24,7 +24,8 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
     $errors = array_merge($errors, cek_field($field_array,$_POST));
 
     if(empty($errors)){
-        $cuprimer->name = $_POST['name'];
+        $judul = $_POST['name'];
+        $cuprimer->name = $judul;
 
         $content = $_POST['content'];
         $entity_content = htmlentities($content);
@@ -35,48 +36,53 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
         $dt = time();
         $waktu = strftime("%Y-%m-%d %H:%M:%S", $dt);
         $cuprimer->tanggal = $waktu;
-
-        if($_POST['kategori'] == "tambah"){
-            $wilayah_cuprimer->name = $_POST['kategori_baru'];
-            if($wilayah_cuprimer->validasi_duplikat()){
-                if($wilayah_cuprimer->save()){
-                    $wilayah_cuprimer->name = $_POST['kategori_baru'];
-                    $sel_kategori = $wilayah_cuprimer->get_kategori();
-                    $cuprimer->wilayah = $sel_kategori['id'];
-                    if($cuprimer->save()){
-                        if(isset($_POST['simpan'])){
-                            $session->pesan("Artikel berhasil di tambah");
-                            redirect_to("tampil_artikel.php");
-                        }
-                        if(isset($_POST['simpanbaru'])){
-                            redirect_to("tambah_artikel.php");
+        try{
+            if($_POST['kategori'] == "tambah"){
+                $wilayah_cuprimer->name = $_POST['kategori_baru'];
+                if($wilayah_cuprimer->validasi_duplikat()){
+                    if($wilayah_cuprimer->save()){
+                        $wilayah_cuprimer->name = $_POST['kategori_baru'];
+                        $sel_kategori = $wilayah_cuprimer->get_kategori();
+                        $cuprimer->wilayah = $sel_kategori['id'];
+                        if($cuprimer->save()){
+                            if(isset($_POST['simpan'])){
+                                $session->pesan("Informasi cu {$judul} berhasil di tambah");
+                                redirect_to("tampil_artikel.php");
+                            }
+                            if(isset($_POST['simpanbaru'])){
+                                $session->pesan("Informasi cu {$judul} berhasil di tambah");
+                                redirect_to("tambah_artikel.php");
+                            }
+                        }else{
+                            $message = "Gagal menambah informasi cu";
                         }
                     }else{
-                        $message = "Gagal menambah artikel : " . mysql_error();
+                        $message = "Gagal menambah wilayah cu";
                     }
                 }else{
-                    $message = "Gagal menambah kategori artikel : " . mysql_error();
+                    $message = "Gagal menambah wilayah cu : wilayah cu sudah ada";
                 }
             }else{
-                $message = "Gagal menambah kategori artikel : kategori artikel sudah ada";
-            }
-        }else{
-            $cuprimer->kategori = $_POST['kategori'];
-            if($cuprimer->save()){
-                if(isset($_POST['simpan'])){
-                    $session->pesan("Artikel {$judul} berhasil di tambah");
-                    redirect_to("tampil_artikel.php");
+                $cuprimer->kategori = $_POST['kategori'];
+                if($cuprimer->save()){
+                    if(isset($_POST['simpan'])){
+                        $session->pesan("Informasi cu {$judul} berhasil di tambah");
+                        redirect_to("tampil_cuprimer.php");
+                    }
+                    if(isset($_POST['simpanbaru'])){
+                        $session->pesan("Informasi cu {$judul} berhasil di tambah");
+                        redirect_to("tambah_cuprimer.php");
+                    }
+                }else{
+                    $message = "Gagal menambah informasi cu";
                 }
-                if(isset($_POST['simpanbaru'])){
-                    $session->pesan("Artikel {$judul} berhasil di tambah");
-                    redirect_to("tambah_artikel.php");
-                }
-            }else{
-                $message = "Gagal menambah artikel : " . mysql_error();
             }
-        } 
+        }catch(PDOException $e){
+            $message = "Gagal menambah informasi cu ";
+            error_notice($e);
+        }     
     }else
-        $message = "Gagal menambah CU Primer : " . mysql_error();
+        $message = "Gagal menambah informasi cu";
 }
 
 

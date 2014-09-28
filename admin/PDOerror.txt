@@ -1,2 +1,4 @@
 2014-09-28 15:05:01:SQLSTATE[HY000] [1049] Unknown database 'db_nam' in C:\xampp\htdocs\bkcu\includes\database.php line 25
 2014-09-28 15:05:31:SQLSTATE[HY000] [1049] Unknown database 'db_nam' in C:\xampp\htdocs\bkcu\includes\database.php line 25
+2014-09-28 17:48:27:SQLSTATE[HY093]: Invalid parameter number: number of bound variables does not match number of tokens in C:\xampp\htdocs\bkcu\admin\tambah_admin.php line 70
+2014-09-28 17:48:41:SQLSTATE[HY093]: Invalid parameter number: number of bound variables does not match number of tokens in C:\xampp\htdocs\bkcu\admin\tambah_admin.php line 70

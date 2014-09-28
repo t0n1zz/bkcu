@@ -28,19 +28,24 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
     	$kantor_pelayanan->fax = $_POST['fax'];
     	$kantor_pelayanan->email = $_POST['email'];
 
-        if($kantor_pelayanan->save()){
-            if(isset($_POST['simpan'])){
-                $session->pesan("Kantor Pelayanan {$name} berhasil di tambah");
-                redirect_to("tampil_kantor_pelayanan.php");
-            }
-            if(isset($_POST['simpanbaru'])){
-                $session->pesan("Kantor Pelayanan {$name} berhasil di tambah");
-                redirect_to("tambah_kantor_pelayanan.php");
-            }
-        }else
-             $message = "Gagal menambah Kantor Pelayanan: " . mysql_error();
+        try{
+            if($kantor_pelayanan->save()){
+                if(isset($_POST['simpan'])){
+                    $session->pesan("Kantor pelayanan {$name} berhasil di tambah");
+                    redirect_to("tampil_kantor_pelayanan.php");
+                }
+                if(isset($_POST['simpanbaru'])){
+                    $session->pesan("Kantor pelayanan {$name} berhasil di tambah");
+                    redirect_to("tambah_kantor_pelayanan.php");
+                }
+            }else
+                 $message = "Gagal menambah Kantor Pelayanan";
+        }catch(PDOException $e){
+            $message = "Gagal menambah kantor pelayanan";
+            error_notice($e);
+        } 
     }else
-        $message = "Gagal penambahan Kantor Pelayanan" . mysql_error();
+        $message = "Gagal menambah kantor pelayanan";
 }
 
 

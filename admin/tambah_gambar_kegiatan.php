@@ -31,7 +31,8 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
     $errors = array_merge($errors, cek_field($field_array,$_POST));
 
     if(empty($errors)){
-    	if ($_FILES['upload_file']['error'] < 1) {
+        $error = $_FILES['upload_file']['error'];
+    	if ($error < 1) {
 	        $gambar_kegiatan->name = $_POST['name'];
             $name = $_POST['name'];
 	        $gambar_kegiatan->upload_gambar($_FILES['upload_file']['tmp_name']);
@@ -40,23 +41,28 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
 	        $dt = time();
 	        $waktu = strftime("%Y-%m-%d %H:%M:%S", $dt);
 	        $gambar_kegiatan->tanggal = $waktu;
-	        if($gambar_kegiatan->save()){
-	            if(isset($_POST['simpan'])){
-	                $session->pesan("Berhasil menambah gambar kegiatan {$name}");
-	                redirect_to("tampil_gambar_kegiatan.php");
-	            }
-	            if(isset($_POST['simpanbaru'])){
-	                $session->pesan("Gambar kegiatan {$name} berhasil di tambah");
-	                redirect_to("tambah_gambar_kegiatan.php");
-	            }
-	        }else{
-	            $message = "Gagal menambah gambar kegiatan : " . mysql_error();
-	        }
+            try{
+    	        if($gambar_kegiatan->save()){
+    	            if(isset($_POST['simpan'])){
+    	                $session->pesan("Berhasil menambah gambar kegiatan {$name}");
+    	                redirect_to("tampil_gambar_kegiatan.php");
+    	            }
+    	            if(isset($_POST['simpanbaru'])){
+    	                $session->pesan("Gambar kegiatan {$name} berhasil di tambah");
+    	                redirect_to("tambah_gambar_kegiatan.php");
+    	            }
+    	        }else{
+    	            $message = "Gagal menambah gambar kegiatan";
+    	        }
+            }catch(PDOException $e){
+                $message = "Gagal menambah gambar kegiatan";
+                error_notice($e);
+            }  
 	    }else{
             $message = $upload_errors[$error];
         }
     }else
-        $message = "Gagal menambah gambar kegiatan : " . mysql_error();
+        $message = "Gagal menambah gambar kegiatan";
 }
 
 
@@ -161,7 +167,7 @@ if(isset($_POST['batal'])){
                                     title="Menyimpan gambar kegiatan dan memulai menambah gambar kegiatan baru" 
                                     class="btn btn-default"><span class="fa fa-save"></span> <span class="fa fa-plus"></span> Simpan dan buat baru</button>
                         <button type="submit" name="batal" data-toggle="tooltip" data-placement="top" 
-                                    title="Batal menambah layanan dan kembali ke halaman Kelola Pelayanan" 
+                                    title="Batal menambah gambar kegiatan dan kembali ke halaman Kelola gambar kegiatan" 
                                     class="btn btn-default"><span class="fa fa-times-circle"></span> Batal</button>
                     </div>
                     <!--/button-->

@@ -27,52 +27,50 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
         $admin->username = trim($_POST['username']);
         $admin->password = trim($_POST['password']);
         $admin->status = 1;
-        $admin->akses_artikel = $_POST['akses_artikel'];
-        $admin->tambah_artikel = $_POST['tambah_artikel'];
-        $admin->ubah_artikel = $_POST['ubah_artikel'];
-        $admin->ubah_status_artikel = $_POST['ubah_status_artikel'];
-        $admin->hapus_artikel = $_POST['hapus_artikel'];
-        $admin->akses_kategori = $_POST['akses_kategori'];
-        $admin->tambah_kategori = $_POST['tambah_kategori'];
-        $admin->ubah_kategori = $_POST['ubah_kategori'];
-        $admin->hapus_kategori = $_POST['hapus_kategori'];
-        $admin->akses_admin = $_POST['akses_admin'];
 
-        if($_POST['cu'] == 'tambah'){
-            $cu->name = $_POST['cu_baru'];
-            if($cu->validasi_duplikat()){
-                if($cu->save()){
-                    $cu->name = $_POST['cu_baru'];
-                    $sel_cu = $cu->get_cu();
-                    $admin->cu = $sel_cu['id'];
-                    if($admin->save()){
-                        if(isset($_POST['simpan'])){
-                            $session->pesan("Admin berhasil di tambah");
-                            redirect_to("tampil_admin.php");
-                        }
-                        if(isset($_POST['simpanbaru'])){
-                            $session->pesan("Admin berhasil di tambah");
-                            redirect_to("tambah_admin.php");
-                        }
+        try{
+            if($_POST['cu'] == 'tambah'){
+                $cu->name = $_POST['cu_baru'];
+                if($cu->validasi_duplikat()){
+                    if($cu->save()){
+                        $cu->name = $_POST['cu_baru'];
+                        $sel_cu = $cu->get_cu();
+                        $admin->cu = $sel_cu['id'];
+                        if($admin->validasi_duplikat()){
+                            if($admin->save()){
+                                if(isset($_POST['simpan'])){
+                                    $session->pesan("Admin berhasil di tambah");
+                                    redirect_to("tampil_admin.php");
+                                }
+                                if(isset($_POST['simpanbaru'])){
+                                    $session->pesan("Admin berhasil di tambah");
+                                    redirect_to("tambah_admin.php");
+                                }
+                            }else
+                                 $message = "Gagal menambah admin";
+                        }else
+                            $message = "Gagal penambahan admin, username sudah dipakai";
                     }else
-                         $message = "Gagal menambah admin : " . mysql_error();
+                         $message = "Gagal menambah data credit union";
                 }else
-                     $message = "Gagal menambah data credit union : " . mysql_error();
-            }else
-                $message = "Gagal menambah data credit union : credit union sudah ada";
-        }else{
-            $admin->cu = $_POST['cu'];
-            if($admin->validasi_duplikat()){
-                if($admin->create()){
-                    $session->pesan("Admin berhasil di tambah");
-                    redirect_to("tampil_admin.php");
+                    $message = "Gagal menambah data credit union : credit union sudah ada";
+            }else{
+                $admin->cu = $_POST['cu'];
+                if($admin->validasi_duplikat()){
+                    if($admin->create()){
+                        $session->pesan("Admin berhasil di tambah");
+                        redirect_to("tampil_admin.php");
+                    }else
+                        $message = "Gagal menambah admin";
                 }else
-                    $message = "Gagal penambahan admin" . mysql_error();
-            }else
-                $message = "Gagal penambahan admin" . mysql_error();
-        }
+                    $message = "Gagal penambahan admin, username sudah dipakai";
+            }
+        }catch(PDOException $e){
+            $message = "Gagal menambah admin";
+            error_notice($e);
+        } 
     }else
-        $message = "Gagal penambahan admin" . mysql_error();
+        $message = "Gagal menambah admin";
 }
 
 

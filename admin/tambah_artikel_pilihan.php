@@ -31,7 +31,8 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
     $errors = array_merge($errors, cek_field($field_array,$_POST));
 
     if(empty($errors)){
-        if ($_FILES['upload_file']['error'] < 1) {
+        $error = $_FILES['upload_file']['error'];
+        if ($error < 1) {
             $artikel_pilihan->judul = $_POST['judul'];
             $artikel_pilihan->upload_gambar($_FILES['upload_file']['tmp_name']);
             $judul = $_POST['judul'];
@@ -48,18 +49,23 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
             $dt = time();
             $waktu = strftime("%Y-%m-%d %H:%M:%S", $dt);
             $artikel_pilihan->tanggal = $waktu;
-            if($artikel_pilihan->save()){
-                if(isset($_POST['simpan'])){
-                    $session->pesan("Berhasil menambah artikel {$judul}");
-                    redirect_to("tampil_artikel_pilihan.php");
+            try{
+                if($artikel_pilihan->save()){
+                    if(isset($_POST['simpan'])){
+                        $session->pesan("Berhasil menambah artikel {$judul}");
+                        redirect_to("tampil_artikel_pilihan.php");
+                    }
+                    if(isset($_POST['simpanbaru'])){
+                        $session->pesan("Artikel {$judul} berhasil di tambah");
+                        redirect_to("tambah_artikel_pilihan.php");
+                    }
+                }else{
+                    $message = "Gagal menambah artikel pilihan : " . mysql_error();
                 }
-                if(isset($_POST['simpanbaru'])){
-                    $session->pesan("Artikel {$judul} berhasil di tambah");
-                    redirect_to("tambah_artikel_pilihan.php");
-                }
-            }else{
-                $message = "Gagal menambah artikel pilihan : " . mysql_error();
-            }
+            }catch(PDOException $e){
+                $message = "Gagal menambah artikel pilihan";
+                error_notice($e);
+            }    
         }else{
             $message = $upload_errors[$error];
         }

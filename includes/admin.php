@@ -64,13 +64,14 @@ class admin {
 	
 	public function validasi_duplikat(){
 		global $database;
-		$sql ="SELECT * FROM " .self::$nama_tabel;
+		$sql ="SELECT COUNT(*) FROM " .self::$nama_tabel;
 		$sql .=" WHERE username = :username";
 		
 		$database->query($sql);
 		$database->bind(':username',$this->username);
+		$database->execute();
 
-		return ($database->rowCount() >= 1) ? false : true;
+		return ($database->fetchColumn() >= 1) ? false : true;
 	}
 	
 	public static function count_all(){
@@ -119,17 +120,18 @@ class admin {
 
 	public function create(){
 		global $database;
-		$hashed_password = sha1($database->escape_value($this->password));
+		$hashed_password = sha1($this->password);
 		
 		$sql  ="INSERT INTO " .self::$nama_tabel. "(";
-		$sql .="username,password,";
+		$sql .="username,password,status,";
 		$sql .="cu";
 		$sql .=")VALUES(";
-		$sql .=":username,:password,:cu)";
+		$sql .=":username,:password,:status,:cu)";
 
 		$database->query($sql);
 		$database->bind(':username',$this->username);
 		$database->bind(':password',$hashed_password);
+		$database->bind(':status',$this->status);
 		$database->bind(':cu',$this->cu);
 		
 		if($database->execute()){
@@ -142,7 +144,7 @@ class admin {
 
 	public function update(){
 		global $database;
-		$hashed_password = sha1($database->escape_value($this->password));
+		$hashed_password = sha1($this->password);
 		
 		$sql ="UPDATE " .self::$nama_tabel. " SET ";
 		$sql .="password = :password ";

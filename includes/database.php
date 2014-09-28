@@ -69,7 +69,7 @@ class MySQLDatabase {
 	}
 
 	public function fetchColumn(){
-	    return $this->stmt->fetchColumn(PDO::FETCH_ASSOC);
+	    return $this->stmt->fetchColumn();
 	}
 
 	public function rowCount(){
