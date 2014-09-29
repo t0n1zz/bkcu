@@ -15,6 +15,19 @@ $artikel = new artikel();
 $kategori = new kategori_artikel();
 $thispage = "artikel";
 
+$max_file_size = 5048576;
+$upload_errors = array(
+   // http://www.php.net/manual/en/features.file-upload.errors.php
+  UPLOAD_ERR_OK         => "Tidak Terdapat Error.",
+  UPLOAD_ERR_INI_SIZE   => "Ukuran file melebihi batasan upload php.",
+  UPLOAD_ERR_FORM_SIZE  => "Ukuran file terlalu besar.",
+  UPLOAD_ERR_PARTIAL    => "Partial upload.",
+  UPLOAD_ERR_NO_FILE    => "Tidak ditemukan file.",
+  UPLOAD_ERR_NO_TMP_DIR => "Tidak ditemukan direktori sementara.",
+  UPLOAD_ERR_CANT_WRITE => "Tidak bisa memindahkan file.",
+  UPLOAD_ERR_EXTENSION  => "Upload file terhenti."
+);
+
 if(isset($_POST['simpan'])){
     $errors = array();
     if($_POST['kategori'] == "tambah"){
@@ -32,45 +45,109 @@ if(isset($_POST['simpan'])){
         $artikel->penulis = $_POST['penulis'];
         $artikel->tanggal = $_POST['tanggal'];
         $artikel->status = $_POST['status'];
-        
+        if(isset($_POST['artikelpilihan']))
+            $artikel->pilihan = $_POST['artikelpilihan'];
+
+       
         $entity_content = htmlentities($content);
         $entity_content = stripslashes(str_replace('\r\n', '',$entity_content));
         $artikel->content = $entity_content;
-        
-        if($_POST['kategori'] == "tambah"){
-            $kategori->name = $_POST['kategori_baru'];
-            if($kategori->validasi_duplikat()){
-                if($kategori->save()){
+        if(isset($_POST['gambarutama']))
+            $gambarutama = $_POST['gambarutama'];
+
+        if($gambarutama == 1){
+            $error = $_FILES['upload_file']['error'];
+            if ($error == 0 || $error == 4) {
+                try{
+                    if($_POST['kategori'] == "tambah"){
+                        $kategori->name = $_POST['kategori_baru'];
+                        if($kategori->validasi_duplikat()){
+                            if($kategori->save()){
+                                $kategori->name = $_POST['kategori_baru'];
+                                $sel_kategori = $kategori->get_kategori();
+                                $artikel->kategori = $sel_kategori['id'];
+
+                                if($error != 4)
+                                    $artikel->upload_gambar($_FILES['upload_file']['tmp_name']);
+
+                                if($artikel->save()){
+                                    if(isset($_POST['simpan'])){
+                                        $session->pesan("Artikel {$judul} berhasil di ubah");
+                                        redirect_to("tampil_artikel.php");
+                                    }
+                                }else{
+                                    $message = "Gagal mengubah artikel";
+                                }
+                            }else{
+                                $message = "Gagal menambah kategori artikel";
+                            }
+                        }else{
+                            $message = "Gagal menambah kategori artikel : kategori artikel sudah ada";
+                        }
+                    }else{
+                        $artikel->kategori = $_POST['kategori'];
+
+                        if($error != 4)
+                            $artikel->upload_gambar($_FILES['upload_file']['tmp_name']);
+
+                        if($artikel->save()){
+                            if(isset($_POST['simpan'])){
+                                $session->pesan("Artikel {$judul} berhasil di ubah");
+                                redirect_to("tampil_artikel.php");
+                            }
+                        }else{
+                            $message = "Gagal mengubah artikel";
+                        }
+                    }
+                }catch(PDOException $e){
+                    $message = "Gagal menambah artikel";
+                    error_notice($e);
+                }
+            }else
+                $message = $upload_errors[$error];
+        }else{
+            try{
+                if($_POST['kategori'] == "tambah"){
                     $kategori->name = $_POST['kategori_baru'];
-                    $sel_kategori = $kategori->get_kategori();
-                    $artikel->kategori = $sel_kategori['id'];
+                    if($kategori->validasi_duplikat()){
+
+                        if($kategori->save()){
+                            $kategori->name = $_POST['kategori_baru'];
+                            $sel_kategori = $kategori->get_kategori();
+                            $artikel->kategori = $sel_kategori['id'];
+                            if($artikel->save()){
+                                if(isset($_POST['simpan'])){
+                                    $session->pesan("Artikel {$judul} berhasil di ubah");
+                                    redirect_to("tampil_artikel.php");
+                                }
+                            }else{
+                                $message = "Gagal mengubah artikel";
+                            }
+                        }else{
+                            $message = "Gagal menambah kategori artikel";
+                        }
+                    }else{
+                        $message = "Gagal menambah kategori artikel : kategori artikel sudah ada";
+                    }
+                }else{
+                    $artikel->kategori = $_POST['kategori'];
                     if($artikel->save()){
                         if(isset($_POST['simpan'])){
                             $session->pesan("Artikel {$judul} berhasil di ubah");
                             redirect_to("tampil_artikel.php");
                         }
                     }else{
-                        $message = "Gagal menambah artikel : " . mysql_error();
+                        $message = "Gagal mengubah artikel";
                     }
-                }else{
-                    $message = "Gagal menambah kategori artikel : " . mysql_error();
                 }
-            }else{
-                $message = "Gagal menambah kategori artikel : kategori artikel sudah ada";
+            }catch(PDOException $e){
+                $message = "Gagal menambah artikel";
+                error_notice($e);
             }
-        }else{
-            $artikel->kategori = $_POST['kategori'];
-            if($artikel->save()){
-                if(isset($_POST['simpan'])){
-                    $session->pesan("Artikel {$judul} berhasil di tambah");
-                    redirect_to("tampil_artikel.php");
-                }
-            }else{
-                $message = "Gagal menambah artikel : " . mysql_error();
-            }
-        }       
+        }
+              
     }else{
-        $message = "Gagal menambah artikel : " . mysql_error();
+        $message = "Gagal menambah artikel";
     }
 }
 
@@ -164,7 +241,7 @@ if(isset($_POST['batal'])){
                     }
 				?>
               <!-- /alert --> 
-                <form role="form" method="post" action="ubah_artikel.php?artikel=<?php echo $sel_artikel['id']; ?>">
+                <form role="form" method="post" action="ubah_artikel.php?artikel=<?php echo $sel_artikel['id']; ?>" enctype="multipart/form-data">
                 <div class="panel panel-default">
                     <!--button-->
                     <div class="panel-heading tooltip-demo">
@@ -254,6 +331,71 @@ if(isset($_POST['batal'])){
                         </div>
                         </div>
                         <!--/status-->
+                        <!--gambar utama-->
+                        <div class="col-lg-5">
+                        <div class="form-group">
+                            <label>Tampilkan Gambar Utama</label>
+                            <div class="input-group">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="tampilinputgambar" name="gambarutama" value="1"
+                                <?php
+                                    if(!empty($sel_artikel['gambar']))
+                                        echo "checked";
+                                ?>>
+                            </span>
+                            <input type="text" id="gambartext" class="form-control" disabled="true" value="<?php
+                                    if(!empty($sel_artikel['gambar']))
+                                        echo "Iya, gambar akan muncul di list artikel dan view artikel";
+                                    else
+                                        echo "tidak";
+                            ?>">
+                            </div>
+                        </div>
+                        <div id="inputgambar" 
+                        <?php
+                           if(empty($sel_artikel['gambar']))
+                                echo 'style="display:none;"'; 
+                        ?>
+                        >
+                            <div class="thumbnail" >
+                                <img class="img-responsive" src="<?php
+                                            $gambar = $sel_artikel['gambar'];
+                                            $gambar = str_replace(' ', '%20', $gambar);
+                                            if(!empty($gambar) && is_file("../images_artikel/{$gambar}"))
+                                                echo "../images_artikel/{$gambar}";
+                                            else
+                                                echo "../images/no_image.jpg";
+                                        ?> "
+                                        id="tampilgambar">
+                                 <div class="caption">
+                                    <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $max_file_size; ?>" />
+                                    <input onChange="readURL(this);" type="file" name="upload_file" 
+                                            accept="image/jpeg"/>
+                                 </div>
+                            </div>
+                        </div>
+                        </div>
+                        <!--/gambar utama-->
+                        <!--artikel pilihan-->
+                        <div class="col-lg-5">
+                        <div class="form-group">
+                            <label>Artikel Pilihan</label>
+                            <div class="input-group">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="artikelpilihan" name="artikelpilihan" value="1"
+                                <?php
+                                    if(!empty($sel_artikel['pilihan']))
+                                        echo "checked";
+                                ?>>
+                            </span>
+                            <input type="text" id="artikeltext" class="form-control" disabled="true" value="<?php
+                                if(!empty($sel_artikel['pilihan']))
+                                    echo "Iya, artikel akan muncul di slideshow";
+                            ?>">
+                            </div>
+                        </div>
+                        </div>
+                        <!--/artikel pilihan-->
                         <!--content-->
                         <div class="col-lg-12">
                             <label>Isi Artikel</label>

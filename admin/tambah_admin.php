@@ -16,45 +16,20 @@ $thispage = "tambah_admin";
 
 if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
     $errors = array();
-    if($_POST['cu'] == 'tambah')
-        $field_array = array('username','password','cu_baru');
-    else
-        $field_array = array('username','password');
+    $field_array = array('username','password1','password2');
 
     $errors = array_merge($errors, cek_field($field_array,$_POST));
 
     if(empty($errors)){
+        $password1 = trim($_POST['password1']);
+        $password2 = trim($_POST['password2']);
+
         $admin->username = trim($_POST['username']);
-        $admin->password = trim($_POST['password']);
+        $admin->password = $password1;
         $admin->status = 1;
 
         try{
-            if($_POST['cu'] == 'tambah'){
-                $cu->name = $_POST['cu_baru'];
-                if($cu->validasi_duplikat()){
-                    if($cu->save()){
-                        $cu->name = $_POST['cu_baru'];
-                        $sel_cu = $cu->get_cu();
-                        $admin->cu = $sel_cu['id'];
-                        if($admin->validasi_duplikat()){
-                            if($admin->save()){
-                                if(isset($_POST['simpan'])){
-                                    $session->pesan("Admin berhasil di tambah");
-                                    redirect_to("tampil_admin.php");
-                                }
-                                if(isset($_POST['simpanbaru'])){
-                                    $session->pesan("Admin berhasil di tambah");
-                                    redirect_to("tambah_admin.php");
-                                }
-                            }else
-                                 $message = "Gagal menambah admin";
-                        }else
-                            $message = "Gagal penambahan admin, username sudah dipakai";
-                    }else
-                         $message = "Gagal menambah data credit union";
-                }else
-                    $message = "Gagal menambah data credit union : credit union sudah ada";
-            }else{
+            if($password1 == $password2){
                 $admin->cu = $_POST['cu'];
                 if($admin->validasi_duplikat()){
                     if($admin->create()){
@@ -64,7 +39,8 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
                         $message = "Gagal menambah admin";
                 }else
                     $message = "Gagal penambahan admin, username sudah dipakai";
-            }
+            }else
+                $message = "Gagal penambahan admin, password tidak cocok";
         }catch(PDOException $e){
             $message = "Gagal menambah admin";
             error_notice($e);
@@ -187,11 +163,19 @@ if(isset($_POST['batal'])){
                                      placeholder="Masukkan username" maxlength="50">
                             </div>
                         </div>
+                        <hr/>
                         <div class="form-group">
                             <div class="input-group">
                               <div class="input-group-addon">Password</div>
-                              <input class="form-control" type="password" name="password" 
+                              <input class="form-control" type="password" name="password1" 
                                      placeholder="Masukkan password" maxlength="30">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                              <div class="input-group-addon">Tulis Ulang Password</div>
+                              <input class="form-control" type="password" name="password2" 
+                                     placeholder="Masukkan ulang password" maxlength="30">
                             </div>
                         </div>
                         <hr/>
@@ -202,21 +186,14 @@ if(isset($_POST['batal'])){
                                   <option value="0">Pilih Asal Credit Union </option>
                                   <option value="0">BKCU </option>
                                   <?php
-                                    $result = $database->query("select * from ". cuprimer::$nama_tabel);
-                                    while($row =$database->fetch_array($result)){
+                                    $database->query("select * from ". cuprimer::$nama_tabel);
+                                    $database->execute();
+                                    while($row =$database->fetch()){
                                         $output = "<option value=\"{$row['id']}\">{$row['name']}</option>";
                                         echo $output;
                                     }
                                   ?>
-                                  <option value="tambah" >Tambah Data Credit Union Baru</option>
                               </select> 
-                            </div>
-                        </div>
-                        <div class="form-group" id="pilihan" style="display:none;">
-                            <div class="input-group">
-                                <div class="input-group-addon">Nama Credit Union</div>
-                                <input type="text" class="form-control" 
-                                name="cu_baru" placeholder="Masukkan Nama Credit Union" >
                             </div>
                         </div>
                         <hr/>

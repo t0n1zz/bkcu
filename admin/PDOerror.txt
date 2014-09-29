@@ -2,3 +2,6 @@
 2014-09-28 15:05:31:SQLSTATE[HY000] [1049] Unknown database 'db_nam' in C:\xampp\htdocs\bkcu\includes\database.php line 25
 2014-09-28 17:48:27:SQLSTATE[HY093]: Invalid parameter number: number of bound variables does not match number of tokens in C:\xampp\htdocs\bkcu\admin\tambah_admin.php line 70
 2014-09-28 17:48:41:SQLSTATE[HY093]: Invalid parameter number: number of bound variables does not match number of tokens in C:\xampp\htdocs\bkcu\admin\tambah_admin.php line 70
+2014-09-29 10:36:21:SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'penulis' cannot be null in C:\xampp\htdocs\bkcu\admin\tampil_pengumuman.php line 38
+2014-09-29 10:36:40:SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'penulis' cannot be null in C:\xampp\htdocs\bkcu\admin\tampil_pengumuman.php line 38
+2014-09-29 11:08:54:SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'cu = 'Pilih Asal Credit Union' WHERE id= '10'' at line 1 in C:\xampp\htdocs\bkcu\admin\ubah_admin.php line 43

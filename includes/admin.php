@@ -30,13 +30,10 @@ class admin {
 		
 		$sql = "SELECT * FROM " .self::$nama_tabel;
 		$sql .= " WHERE username = :username";
-		$sql .= " AND password = :hashed_password";
+		$sql .= " AND password = :password";
 		$sql .= " LIMIT 1";
-		
-		$database->bind(':username',$this->username);
-		$database->bind(':hashed_password',$this->hashed_password);
 
-		$result_array = self::find_by_sql($sql);
+		$result_array = self::find_by_sql($sql,$username,$hashed_password);
 
 		return !empty($result_array) ? array_shift($result_array) : false;
 	}
@@ -50,9 +47,12 @@ class admin {
 		return !empty($result_array) ? array_shift($result_array) : false;
 	}
 	
-	public static function find_by_sql($sql=""){
+	public static function find_by_sql($sql="", $username,$password){
 		global $database;
+
 		$database->query($sql);
+		$database->bind(':username',$username);
+		$database->bind(':password',$password);
 		$database->execute();
 
 		$object_array = array();
@@ -79,6 +79,7 @@ class admin {
 		$sql = "SELECT COUNT(*) FROM " .self::$nama_tabel;
 		
 		$database->query($sql);
+		$database->execute();
 		
 		return $database->fetchColumn();
 	}
@@ -147,7 +148,7 @@ class admin {
 		$hashed_password = sha1($this->password);
 		
 		$sql ="UPDATE " .self::$nama_tabel. " SET ";
-		$sql .="password = :password ";
+		$sql .="password = :password ,";
 		$sql .="cu = :cu";
 		$sql .=" WHERE id= :id";
 
@@ -168,6 +169,20 @@ class admin {
 
 		$database->query($sql);
 		$database->bind(':status', $this->status);
+		$database->bind(':id', $this->id);
+		
+		return $database->execute();
+	}
+
+	public function update_cu(){
+		global $database;
+		
+		$sql ="UPDATE " .self::$nama_tabel. " SET ";
+		$sql .="cu = :cu";
+		$sql .=" WHERE id = :id";
+
+		$database->query($sql);
+		$database->bind(':cu', $this->cu);
 		$database->bind(':id', $this->id);
 		
 		return $database->execute();

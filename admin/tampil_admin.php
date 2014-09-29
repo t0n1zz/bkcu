@@ -18,20 +18,47 @@ if(isset($_POST['btnstatus'])){
     $admin->id = $_POST['idadmin'];
     $admin->status = $_POST['status'];
 
-    if($admin->update_status()){
-        $session->pesan("Berhasil mengubah status admin");
-        redirect_to("tampil_admin.php");
-    }else
-        $message = "Gagal mengubah status admin : " . mysql_error();
+    try{
+        if($admin->update_status()){
+            $session->pesan("Berhasil mengubah status admin");
+            redirect_to("tampil_admin.php");
+        }else
+            $message = "Gagal mengubah status admin";
+    }catch(PDOException $e){
+        error_notice($e);
+        $message = "Gagal mengubah status admin";
+    } 
 }
 
 if(isset($_POST['btnhapus'])){
     $admin->id = $_POST['id2admin'];
-    if($admin->delete()){
-        $session->pesan("Berhasil menghapus admin");
-        redirect_to("tampil_admin.php");
-    }else
-        $message = "Gagal menghapus admin : " . mysql_error();
+
+    try{
+        if($admin->delete()){
+            $session->pesan("Berhasil menghapus admin");
+            redirect_to("tampil_admin.php");
+        }else
+            $message = "Gagal menghapus admin";
+    }catch(PDOException $e){
+        error_notice($e);
+        $message = "Gagal menghapus admin";
+    } 
+}
+
+if(isset($_POST['btnkategori'])){
+    $admin->id = $_POST['idadmin'];
+    $admin->cu = $_POST['kategori'];
+
+    try{
+        if($admin->update_cu()){
+            $session->pesan("Berhasil mengubah asal cu");
+            redirect_to("tampil_admin.php");
+        }else
+            $message = "Gagal mengubah asal cu";
+    }catch(PDOException $e){
+        error_notice($e);
+        $message = "Gagal mengubah asal cu";
+    } 
 }
 
 if(isset($_POST['btnakses'])){
@@ -183,10 +210,15 @@ if(isset($_POST['btnakses'])){
                                 $y=substr($x,0,5) . '...';
                             }
 
-                            $sql_tampil = "SELECT * FROM " . admin::$nama_tabel;
+                            $sql_tampil = "SELECT ad.id,ad.username,ad.cu,ad.status,ad.online,ad.offline,";
+                            $sql_tampil .="cu.id as cuid,cu.name as cuname";
+                            $sql_tampil .=" FROM " .admin::$nama_tabel. " ad";
+                            $sql_tampil .=" LEFT JOIN " .cuprimer::$nama_tabel. " cu";
+                            $sql_tampil .=" ON ad.cu = cu.id";
 
-                            $result = $database->query($sql_tampil);
-                            while($row = $database->fetch_array($result)){
+                            $database->query($sql_tampil);
+                            $database->execute();
+                            while($row = $database->fetch()){
                                $output = "<tr>";
                                     if(!empty($row['id']))
                                         $output .="<td><a data-toggle=\"tooltip\" data-placement=\"top\" 
@@ -204,18 +236,16 @@ if(isset($_POST['btnakses'])){
                                     else
                                        $output .="<td>-</td>";
 
-                                    $cu->id = $row['cu'];
-                                    $sel_cu = $cu->get_subject_by_id();
-                                    if(!empty($sel_cu))
-                                        $output .="<td><a data-toggle=\"tooltip\" data-placement=\"top\" 
-                                                        title=\"Tekan untuk mengubah informasi admin ini\" 
-                                                        href=\"ubah_admin.php?admin={$row['id']}\"
-                                                        >{$sel_cu['name']}</a></td>";
+                                    if(!empty($row['cuid']))
+                                        $output .="<td><a href=\"#\" class=\"modal3\"
+                                                        data-toggle=\"tooltip\" data-placement=\"top\" 
+                                                        title=\"Tekan untuk mengubah informasi asal cu \"
+                                                        name={$row['id']}>{$row['cuname']}</a></td>";
                                     else
-                                        $output .="<td><a data-toggle=\"tooltip\" data-placement=\"top\" 
-                                                        title=\"Tekan untuk mengubah informasi admin ini\" 
-                                                        href=\"ubah_admin.php?admin={$row['id']}\"
-                                                        >BKCU</a></td>";
+                                        $output .="<td><a href=\"#\" class=\"modal3\"
+                                                        data-toggle=\"tooltip\" data-placement=\"top\" 
+                                                        title=\"Tekan untuk mengubah informasi asal cu \"
+                                                        name={$row['id']}>-</a></td>";
 
                                     if($row['status'] == 0)
                                        $output .="<td><a href=\"#\" class=\"modal1\"
@@ -228,7 +258,10 @@ if(isset($_POST['btnakses'])){
                                                         title=\"Tekan untuk mengubah status admin ini\" 
                                                         name={$row['id']}>Aktif</a></td>";
                                     else
-                                        $output .="<td>-</td>"; 
+                                        $output .="<td><a href=\"#\" class=\"modal1\"
+                                                        data-toggle=\"tooltip\" data-placement=\"top\" 
+                                                        title=\"Tekan untuk mengubah status admin ini\" 
+                                                        name={$row['id']}>-</a></td>"; 
 
                                     if(!empty($row['online']))
                                         $output .="<td>{$row['online']}</td>";
@@ -341,6 +374,44 @@ if(isset($_POST['btnakses'])){
        </form>
     </div>
     <!-- /Hapus -->
+    <!-- cu -->
+    <div class="modal fade" id="modal3show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+       <form role="form" action="tampil_admin.php" method="post">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title ">Asal Credit Union</h4>
+            </div>
+            <div class="modal-body">
+              <strong>Mengubah Asal Credit Union</strong> 
+              <br />
+              <br />
+                    <input type="text" name="idadmin" value="" id="modal3id" hidden>
+                    <select class="form-control" name="kategori">
+                            <option >Pilih Asal Credit Union</option>
+                            <?php
+                                $database->query("select * from ". cuprimer::$nama_tabel);
+                                $database->execute();
+                                while($row =$database->fetch()){
+                                    $output = "<option value=\"{$row['id']}\">{$row['name']}</option>";
+                                    echo $output;
+                                }
+                            ?>
+                            </select>
+               <br />
+               <br />
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary" name="btnkategori"
+                    id="modalbutton">Ok</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal"> Batal</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+       </form>
+    </div>
+    <!-- /cu -->
     <!-- /.modal -->
 
 

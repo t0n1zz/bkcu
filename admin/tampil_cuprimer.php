@@ -18,39 +18,31 @@ if(isset($_POST['btndo'])){
     $cuprimer->id = $_POST['idartikel'];
     $cuprimer->wilayah = $_POST['wilayah'];
 
-    if($cuprimer->update_wilayah()){
-        $session->pesan("Berhasil mengubah informasi wilayah CU");
-        redirect_to("tampil_cuprimer.php");
-    }else
-        $message = "Gagal mengubah informasi wilayah CU : " . mysql_error();
-}
-
-if(isset($_POST['btnubah'])){
-    $errors = array();
-    $field_array = array('website');
-    $errors = array_merge($errors, cek_field($field_array,$_POST));
-
-    if(empty($errors)){
-        $cuprimer->id = $_POST['idwebsite'];
-        $cuprimer->website = $_POST['website'];
-        if($cuprimer->update_website()){
-            $session->pesan("Berhasil mengubah informasi website CU");
+    try{
+        if($cuprimer->update_wilayah()){
+            $session->pesan("Berhasil mengubah informasi wilayah cu");
             redirect_to("tampil_cuprimer.php");
-        }else{
-            $message = "Gagal mengubah informasi website CU : " . mysql_error();
-        }
-    }else
-        $message = "Gagal mengubah informasi website CU : " . mysql_error();
+        }else
+            $message = "Gagal mengubah informasi wilayah cu";
+    }catch(PDOException $e){
+        error_notice($e);
+        $message = "Gagal mengubah informasi wilayah cu";
+    } 
 }
 
 if(isset($_POST['btnhapus'])){
     $cuprimer->id = $_POST['id2artikel'];
 
-    if($cuprimer->delete()){
-        $session->pesan("Berhasil menghapus informasi CU Primer");
-        redirect_to("tampil_cuprimer.php");
-    }else
-        $message = "Gagal menghapus informasi CU Primer : " . mysql_error();
+    try{
+        if($cuprimer->delete()){
+            $session->pesan("Berhasil menghapus informasi cu");
+            redirect_to("tampil_cuprimer.php");
+        }else
+            $message = "Gagal menghapus informasi cu";
+    }catch(PDOException $e){
+        error_notice($e);
+        $message = "Gagal menghapus informasi cu";
+    } 
 }
  
 ?>
@@ -66,7 +58,7 @@ if(isset($_POST['btnhapus'])){
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Puskopdit BKCU Kalimantan Admin Site -- Kelola Kegiatan</title>
+    <title>Puskopdit BKCU Kalimantan Admin Site -- Kelola CU</title>
     <link rel="shortcut icon" href="../images/logo.png"> 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -104,7 +96,7 @@ if(isset($_POST['btnhapus'])){
        	<!-- header -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header"><span class="fa fa-archive"></span> Kelola CU Primer</h1>
+                <h1 class="page-header"><span class="fa fa-archive"></span> Kelola CU </h1>
             </div>           
         </div>
         <!-- /header -->            
@@ -144,8 +136,8 @@ if(isset($_POST['btnhapus'])){
                     <form class="form-inline" role="form" action="tampil_kegiatan.php">
                         <div class="form-group">
                             <a type="button" data-toggle="tooltip" data-placement="top" 
-                                title="Tekan untuk menambah artikel baru" 
-                                class="btn btn-default" href="tambah_cuprimer.php"><span class="fa fa-plus"></span> Tambah Informasi CU Primer</a>
+                                title="Tekan untuk menambah cu baru" 
+                                class="btn btn-default" href="tambah_cuprimer.php"><span class="fa fa-plus"></span> Tambah Informasi CU</a>
                             <?php
                                 if(isset($_GET['wilayah']))
                                    echo "<a type=\"button\" class=\"btn btn-default\" 
@@ -174,20 +166,26 @@ if(isset($_POST['btnhapus'])){
                         <?php
 
 
-                            $sql_tampil = "SELECT * FROM " . cuprimer::$nama_tabel;
+                            $sql_tampil = "SELECT cu.id,cu.name,cu.wilayah,cu.content,cu.wilayah,cu.tanggal,";
+                            $sql_tampil .=" w.id as wid,w.name as wname";
+                            $sql_tampil .=" FROM " .cuprimer::$nama_tabel. " cu";
+                            $sql_tampil .=" LEFT JOIN " .wilayah_cuprimer::$nama_tabel. " w";
+                            $sql_tampil .=" ON cu.wilayah = w.id";
 
-                             if(isset($_GET['wilayah'])){
+                            if(isset($_GET['wilayah'])){
                                 $wilayah_id = $_GET['wilayah'];
                                 $sql_tampil .=" WHERE wilayah='" .$wilayah_id. "'";
                             }
 
-                            $result = $database->query($sql_tampil);
-                            while($row = $database->fetch_array($result)){
+                            $database->query($sql_tampil);
+                            $database->execute();
+
+                            while($row = $database->fetch()){
                                $output = "<tr>";
                                     if(!empty($row['id']))
 
                                         $output .="<td><a data-toggle=\"tooltip\" data-placement=\"top\" 
-                                                        title=\"Tekan untuk mengubah informasi kegiatan ini\" 
+                                                        title=\"Tekan untuk mengubah informasi cu ini\" 
                                                         href=\"ubah_cuprimer.php?cu={$row['id']}\"
                                                         >{$row['id']}</a></td>";
                                     else
@@ -208,17 +206,15 @@ if(isset($_POST['btnhapus'])){
                                     }else
                                         $output .="<td>-</td>";
 
-                                    $wilayah_cuprimer->id = $row['wilayah'];
-                                    $sel_kategori = $wilayah_cuprimer->get_subject_by_id();
-                                    if(!empty($sel_kategori))
+                                    if(!empty($row['wid']))
                                        $output .="<td><a href=\"#\" class=\"modal1\"
                                                         data-toggle=\"tooltip\" data-placement=\"top\" 
-                                                        title=\"Tekan untuk mengubah kategori artikel ini\"  
-                                                        name={$row['id']}>{$sel_kategori['name']}</a></td>";
+                                                        title=\"Tekan untuk mengubah wilayah cu ini\"  
+                                                        name={$row['id']}>{$row['wname']}</a></td>";
                                     else
                                        $output .="<td><a href=\"#\" class=\"modal1\"
                                                         data-toggle=\"tooltip\" data-placement=\"top\" 
-                                                        title=\"Tekan untuk mengubah kategori artikel ini\"  
+                                                        title=\"Tekan untuk mengubah wilayah cu ini\"  
                                                         name={$row['id']}>Tidak masuk wilayah</a></td>";
 
                                     if(!empty($row['content'])){
@@ -248,7 +244,7 @@ if(isset($_POST['btnhapus'])){
                                         $output  .="<td><button class=\"btn btn-default modal2\"
                                                         name=\"{$row['id']}\" 
                                                         data-toggle=\"tooltip\" data-placement=\"top\" 
-                                                        title=\"Tekan untuk menghapus layanan ini\" ><span 
+                                                        title=\"Tekan untuk menghapus cu ini\" ><span 
                                                         class=\"glyphicon glyphicon-trash\"></span></button></td>";
                                     else
                                         $output .="<td>-</td>";
@@ -275,34 +271,6 @@ if(isset($_POST['btnhapus'])){
     </div>
     <!-- /#wrapper -->
     <!-- modal -->
-    <!-- ubah website -->
-    <div class="modal fade" id="modal3show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-       <form role="form" action="tampil_cuprimer.php" method="post">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-              <h4 class="modal-title ">Mengubah informasi website CU</h4>
-            </div>
-            <div class="modal-body">
-              <strong>Mengubah informasi website CU </strong> 
-              <br />
-              <br />
-                    <input type="text" name="idwebsite" value="" id="modal3id" hidden>
-                    <input type="text" class="form-control" name="website" placeholder="Silahkan masukkan informasi website CU" />
-               <br />
-               <br />
-            </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-primary" name="btnubah"
-                    id="modalbutton">Ok</button>
-              <button type="button" class="btn btn-default" data-dismiss="modal"> Batal</button>
-            </div>
-          </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-       </form>
-    </div>
-    <!-- /ubah website -->
     <!-- do -->
     <div class="modal fade" id="modal1show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
        <form role="form" action="tampil_cuprimer.php" method="post">
@@ -320,8 +288,9 @@ if(isset($_POST['btnhapus'])){
                     <select class="form-control" name="wilayah">
                         <option >Pilih Wilayah</option>
                         <?php
-                            $result = $database->query("select * from ". wilayah_cuprimer::$nama_tabel);
-                            while($row =$database->fetch_array($result)){
+                            $database->query("select * from ". wilayah_cuprimer::$nama_tabel);
+                            $database->execute();
+                            while($row =$database->fetch()){
                                 $output = "<option value=\"{$row['id']}\">{$row['name']}</option>";
                                 echo $output;
                             }
@@ -347,10 +316,10 @@ if(isset($_POST['btnhapus'])){
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-              <h4 class="modal-title">Hapus Informasi CU Primer</h4>
+              <h4 class="modal-title">Hapus Informasi CU </h4>
             </div>
             <div class="modal-body">
-              <strong style="font-size: 16px">Menghapus informasi CU Primer ini?</strong>
+              <strong style="font-size: 16px">Menghapus informasi CU  ini?</strong>
               <input type="text" name="id2artikel" value="" id="modal2id" hidden>
             </div>
             <div class="modal-footer">

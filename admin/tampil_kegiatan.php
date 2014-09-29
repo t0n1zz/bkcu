@@ -17,11 +17,17 @@ $thispage = "tampil_kegiatan";
 if(isset($_POST['btnhapus'])){
     $kegiatan->id = $_POST['id2artikel'];
 
-    if($kegiatan->delete()){
-        $session->pesan("Berhasil menghapus informasi kegiatan");
-        redirect_to("tampil_kegiatan.php");
-    }else
-        $message = "Gagal menghapus informasi kegiatan : " . mysql_error();
+    try{
+        if($kegiatan->delete()){
+            $session->pesan("Berhasil menghapus informasi kegiatan");
+            redirect_to("tampil_kegiatan.php");
+        }else
+            $message = "Gagal menghapus informasi kegiatan";
+    }catch(PDOException $e){
+        error_notice($e);
+        $message = "Gagal menghapus informasi kegiatan";
+    }  
+
 }
  
 ?>
@@ -141,11 +147,15 @@ if(isset($_POST['btnhapus'])){
                         <tbody>
                         <?php
 
+                            $sql_tampil = "SELECT k.id,k.name,k.wilayah,k.tempat,k.sasaran,k.fasilitator,k.penulis,k.tanggal,k.tanggal2,";
+                            $sql_tampil .="ad.id as adid,ad.name as adname";
+                            $sql_tampil .=" FROM " .kegiatan::$nama_tabel. " k";
+                            $sql_tampil .=" LEFT JOIN " .admin::$nama_tabel. " ad";
+                            $sql_tampil .=" ON k.penulis = ad.id";
 
-                            $sql_tampil = "SELECT * FROM " . kegiatan::$nama_tabel;
-
-                            $result = $database->query($sql_tampil);
-                            while($row = $database->fetch_array($result)){
+                            $database->query($sql_tampil);
+                            $database->execute();
+                            while($row = $database->fetch()){
                                $output = "<tr>";
                                     if(!empty($row['id']))
 
@@ -225,11 +235,8 @@ if(isset($_POST['btnhapus'])){
                                                         href=\"ubah_kegiatan.php?kegiatan={$row['id']}\"
                                                         >-</a></td>";
 
-
-                                    $admin->id = $row['penulis'];
-                                    $sel_penulis =$admin->get_subject_by_id();
-                                    if(!empty($sel_penulis))        
-                                       $output .="<td>{$sel_penulis['name']}</td>";
+                                    if(!empty($row['penulis']))        
+                                       $output .="<td>{$row['adname']}</td>";
                                     else
                                        $output .="<td>-</td>";
 

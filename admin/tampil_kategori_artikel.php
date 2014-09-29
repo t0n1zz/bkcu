@@ -20,16 +20,22 @@ if(isset($_POST['btntambah'])){
     $errors = array();
     $field_array = array('kategori');
     $errors = array_merge($errors, cek_field($field_array,$_POST));
-    if(empty($errors)){
-        $kategori->name = $_POST['kategori'];
-        if($kategori->save()){
-            $session->pesan("Berhasil menambah kategori baru");
-            redirect_to("tampil_kategori_artikel.php");
-        }else{
-            $message = "Gagal mengubah status : " . mysql_error();
-        }
-    }else
-        $message = "Gagal menambah kategori : " . mysql_error();
+
+    try{
+        if(empty($errors)){
+            $kategori->name = $_POST['kategori'];
+            if($kategori->save()){
+                $session->pesan("Berhasil menambah kategori baru");
+                redirect_to("tampil_kategori_artikel.php");
+            }else{
+                $message = "Gagal menambah kategori baru";
+            }
+        }else
+            $message = "Gagal menambah kategori baru";
+    }catch(PDOException $e){
+        error_notice($e);
+        $message = "Gagal mengubah menambah kategori baru";
+    }
 }
 
 if(isset($_POST['btnubah'])){
@@ -40,14 +46,20 @@ if(isset($_POST['btnubah'])){
     if(empty($errors)){
         $kategori->id = $_POST['idkategori'];
         $kategori->name = $_POST['kategori'];
-        if($kategori->save()){
-            $session->pesan("Berhasil mengubah nama kategori");
-            redirect_to("tampil_kategori_artikel.php");
-        }else{
-            $message = "Gagal mengubah nama kategori : " . mysql_error();
+
+        try{
+            if($kategori->save()){
+                $session->pesan("Berhasil mengubah nama kategori");
+                redirect_to("tampil_kategori_artikel.php");
+            }else{
+                $message = "Gagal mengubah nama kategori";
+            }
+        }catch(PDOException $e){
+            error_notice($e);
+            $message = "Gagal mengubah nama kategori";
         }
     }else
-        $message = "Gagal mengubah nama kategori : " . mysql_error();
+        $message = "Gagal mengubah nama kategori";
 }
 
 if(isset($_POST['btnhapus'])){
@@ -56,11 +68,16 @@ if(isset($_POST['btnhapus'])){
     $artikel->kategori = $id2kategori;
     $jumlah_artikel2 = $artikel->count_kategori();
     if($jumlah_artikel2 == 0){
-        if($kategori->delete()){
-            $session->pesan("Berhasil Menghapus kategori");
-            redirect_to("tampil_kategori_artikel.php");
-        }else
-            $message = "Gagal menghapus kategori : " . mysql_error();
+        try{
+            if($kategori->delete()){
+                $session->pesan("Berhasil Menghapus kategori");
+                redirect_to("tampil_kategori_artikel.php");
+            }else
+                $message = "Gagal menghapus kategori";
+        }catch(PDOException $e){
+            error_notice($e);
+            $message = "Gagal menghapus kategori";
+        }
     }else{
         $message = "Gagal menghapus kategori : masih terdapat " .$jumlah_artikel2. " artikel pada kategori ini : ";
         $message .= "<a href=\"tampil_artikel.php?kategori={$id2kategori}\">Lihat Artikel</a>";
@@ -172,15 +189,22 @@ if(isset($_POST['btnhapus'])){
                                 <th>ID</th>
                                 <th>Kategori </th>
                                 <th>Jumlah Artikel</th>
-                                <!-- <th style="width: 5em  ">Hapus</th> -->
+                                <th style="width: 5em  ">Hapus</th>
                             </tr>
                         </thead>
                         <tbody>
                         <?php
 
-                            $sql_tampil = "SELECT * FROM " .kategori_artikel::$nama_tabel;
-                            $result = $database->query($sql_tampil);
-                            while($row = $database->fetch_array($result)){
+                            $sql_tampil = "SELECT count(ar.kategori) as countartikel,k.id,k.name,ar.kategori";
+                            $sql_tampil .=" FROM " .kategori_artikel::$nama_tabel. " k";
+                            $sql_tampil .=" LEFT JOIN " .artikel::$nama_tabel. " ar";
+                            $sql_tampil .=" ON k.id = ar.kategori";
+                            $sql_tampil .=" GROUP BY k.id";
+                            
+                            $database->query($sql_tampil);
+                            $database->execute();
+                            
+                            while($row = $database->fetch()){
                                $output = "<tr>";
                                     if(!empty($row['id']))
                                         $output .="<td><a data-toggle=\"tooltip\" data-placement=\"top\" 
@@ -198,26 +222,11 @@ if(isset($_POST['btnhapus'])){
                                     else
                                         $output .="<td>-</td>";
 
-                                    if($row['id'] == 1){
-                                        $artikel->kategori = 0;
-                                        $jumlah_artikel = $artikel->count_kategori();
-                                        $output .="<td><a href=\"tampil_artikel.php?kategori=0\"
-                                                        data-toggle=\"tooltip\" data-placement=\"top\" 
-                                                        title=\"Tekan untuk melihat artikel pada kategori ini\"  >
-                                                        {$jumlah_artikel}</a></td>";
-                                    }
-                                    else{
-                                        $artikel->kategori = $row['id'];
-                                        $jumlah_artikel = $artikel->count_kategori();
-                                        $output .="<td><a href=\"tampil_artikel.php?kategori={$row['id']}\"
-                                                        data-toggle=\"tooltip\" data-placement=\"top\" 
-                                                        title=\"Tekan untuk melihat artikel pada kategori ini\"  >
-                                                        {$jumlah_artikel}</a></td>";
-                                    }
+                                    $output .="<td><a href=\"tampil_artikel.php?kategori={$row['id']}\"
+                                                    data-toggle=\"tooltip\" data-placement=\"top\" 
+                                                    title=\"Tekan untuk melihat artikel pada kategori ini\"  >
+                                                    {$row['countartikel']}</a></td>";
 
-                                    
-                                    	
-                                    /*
                                     if(!empty($row['id']))
                                         $output .="<td><button data-toggle=\"tooltip\" data-placement=\"top\" 
                                                         title=\"Tekan untuk menghapus kategori artikel ini\" 
@@ -225,7 +234,7 @@ if(isset($_POST['btnhapus'])){
                                                         ><span class=\"glyphicon glyphicon-trash\"></span></button></td>";
                                     else
                                         $output .="<td>-</td>";
-                                    */	
+                                    
                                 $output .="</tr>";
 
                                echo $output;

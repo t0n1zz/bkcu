@@ -391,7 +391,7 @@ if(isset($_POST['btnhapus'])){
         </div><!-- /.modal-dialog -->
        </form>
     </div>
-    <!-- /status -->
+    <!-- /kategori -->
     <!-- /.modal -->
 
 

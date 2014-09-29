@@ -158,10 +158,15 @@ if(isset($_POST['btnhapus'])){
                         <?php
                             $y = "";
 
-                            $sql_tampil = "SELECT * FROM " . artikel_pilihan::$nama_tabel;
+                            $sql_tampil = "SELECT ap.id,ap.judul,ap.content,ap.status,ap.penulis,ap.tanggal,";
+                            $sql_tampil .="ad.id as adid,ad.name as adname";
+                            $sql_tampil .=" FROM " .artikel_pilihan::$nama_tabel. " ap";
+                            $sql_tampil .=" LEFT JOIN " .admin::$nama_tabel. " ad";
+                            $sql_tampil .=" ON ap.penulis = ad.id";
 
-                            $result = $database->query($sql_tampil);
-                            while($row = $database->fetch_array($result)){
+                            $database->query($sql_tampil);
+                            $database->execute();
+                            while($row = $database->fetch()){
                                $output = "<tr>";
                                     if(!empty($row['id']))
 
@@ -199,11 +204,8 @@ if(isset($_POST['btnhapus'])){
                                         $output .="<td><img src=\"../images/no_image.jpg\" width=\"100\"></td>";        
                                     }
 
-
-                                    $admin->id = $row['penulis'];
-                                    $sel_penulis =$admin->get_subject_by_id();
-                                    if(!empty($sel_penulis))        
-                                       $output .="<td>{$sel_penulis['name']}</td>";
+                                    if(!empty($row['adid']))        
+                                       $output .="<td>{$row['adname']}</td>";
                                     else
                                        $output .="<td>-</td>";
 

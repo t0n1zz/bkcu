@@ -3,7 +3,7 @@ require_once("../includes/function.php");
 require_once("../includes/database.php");
 require_once("../includes/session_admin.php");
 require_once("../includes/admin.php");
-require_once("../includes/cu.php");
+require_once("../includes/cuprimer.php");
 
 if(!$session->is_logged_in()){
     $session->pesan("Anda harus login terlebih dahulu");
@@ -11,54 +11,44 @@ if(!$session->is_logged_in()){
 }
 
 $admin = new admin();
-$cu = new cu();
+$cu = new cuprimer();
 $thispage = "tambah_admin";
 
 if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
     $errors = array();
-    if($_POST['cu'] == 'tambah')
-        $field_array = array('username','password','cu_baru');
-    else
-        $field_array = array('username','password','cu');
+    $field_array = array('username','password1','password2','cu');
 
     $errors = array_merge($errors, cek_field($field_array,$_POST));
 
     if(empty($errors)){
         $admin->id = $_POST['id'];
-        $admin->username = trim($_POST['username']);
-        $admin->password = trim($_POST['password']);
+        $username = trim($_POST['username']);
+        $password1 = trim($_POST['password1']);
+        $password2 = trim($_POST['password2']);
 
-        if($_POST['cu'] == 'tambah'){
-            $cu->name = $_POST['cu_baru'];
-            if($cu->validasi_duplikat()){
-                if($cu->save()){
-                    $cu->name = $_POST['cu_baru'];
-                    $sel_cu = $cu->get_cu();
-                    $admin->cu = $sel_cu['id'];
+        $admin->username = trim($_POST['username']);
+        $admin->password = $password2;
+
+        $admin->cu = $_POST['cu'];
+        $found_user = admin::authenticate($username,$password1);
+        try{
+            if($password1 != $password2){
+                if($found_user){
                     if($admin->save()){
-                        if(isset($_POST['simpan'])){
-                            $session->pesan("Data admin berhasil di ubah");
-                            redirect_to("tampil_admin.php");
-                        }
-                        if(isset($_POST['simpanbaru'])){
-                            redirect_to("tambah_admin.php");
-                        }
+                        $session->pesan("Data admin berhasil di ubah");
+                        redirect_to("tampil_admin.php");
                     }else
-                         $message = "Gagal mengubah data admin : " . mysql_error();
+                        $message = "Gagal mengubah data admin";
                 }else
-                     $message = "Gagal menambah data credit union : " . mysql_error();
+                    $message = "Gagal mengubah data admin : password lama anda salah";
             }else
-                $message = "Gagal menambah data credit union : credit union sudah ada";
-        }else{
-            $admin->cu = $_POST['cu'];
-            if($admin->save()){
-                $session->pesan("Data admin berhasil di ubah");
-                redirect_to("tampil_admin.php");
-            }else
-                $message = "Gagal mengubah data admin : " . mysql_error();
+                $message = "Gagal mengubah data admin : password baru tidak boleh sama dengan password lama";
+        }catch(PDOException $e){
+            error_notice($e);
+            $message = "Gagal mengubah data admin";
         }
     }else
-        $message = "Gagal mengubah data admin : " . mysql_error();
+        $message = "Gagal mengubah data admin";
 }
 
 
@@ -164,7 +154,7 @@ if(isset($_POST['batal'])){
                 }
             ?>
             <!-- /alert --> 
-                <form role="form" method="post" action="ubah_admin.php">
+                <form role="form" method="post" action="ubah_admin.php?admin=<?php echo $sel_admin['id'] ?>">
                 <div class="panel panel-default">
                     <div class="panel-heading tooltip-demo">
                         <button type="submit" name="simpan" data-toggle="tooltip" data-placement="top" 
@@ -185,9 +175,16 @@ if(isset($_POST['batal'])){
                         </div>
                         <div class="form-group">
                             <div class="input-group">
-                              <div class="input-group-addon">Password</div>
-                              <input class="form-control" type="password" name="password" 
-                                     placeholder="Masukkan password" maxlength="30">
+                              <div class="input-group-addon">Password Lama</div>
+                              <input class="form-control" type="password" name="password1" 
+                                     placeholder="Masukkan password lama anda" maxlength="30">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                              <div class="input-group-addon">Password Baru</div>
+                              <input class="form-control" type="password" name="password2" 
+                                     placeholder="Masukkan password baru anda" maxlength="30">
                             </div>
                         </div>
                         <hr/>
@@ -198,8 +195,9 @@ if(isset($_POST['batal'])){
                                   <option >Pilih Asal Credit Union</option>
                                   <option value="0">BKCU </option>
                                   <?php
-                                    $result = $database->query("select * from ". cuprimer::$nama_tabel);
-                                    while($row =$database->fetch_array($result)){
+                                    $database->query("select * from ". cuprimer::$nama_tabel);
+                                    $database->execute();
+                                    while($row =$database->fetch()){
                                         $output = "<option value=\"{$row['id']}\"";
                                         if($sel_admin['cu'] == $row['id'])
                                             $output .=" selected ";
@@ -207,15 +205,7 @@ if(isset($_POST['batal'])){
                                         echo $output;
                                     }
                                   ?>
-                                  <option value="tambah" >Tambah Data Credit Union Baru</option>
                               </select> 
-                            </div>
-                        </div>
-                        <div class="form-group" id="pilihan" style="display:none;">
-                            <div class="input-group">
-                                <div class="input-group-addon">Nama Credit Union</div>
-                                <input type="text" class="form-control" 
-                                name="cu_baru" placeholder="Masukkan Nama Credit Union" >
                             </div>
                         </div>
                     </div>

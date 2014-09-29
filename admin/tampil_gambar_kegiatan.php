@@ -12,15 +12,45 @@ if(!$session->is_logged_in()){
 $gambar_kegiatan = new gambar_kegiatan();
 $thispage = "tampil_gambar_kegiatan";
 
+if(isset($_POST['btnubah'])){
+    $errors = array();
+    $field_array = array('name');
+    $errors = array_merge($errors, cek_field($field_array,$_POST));
+
+    if(empty($errors)){
+        $gambar_kegiatan->id = $_POST['id2artikel'];
+        $gambar_kegiatan->name = $_POST['name'];
+
+        try{
+            if($gambar_kegiatan->update_name()){
+                $session->pesan("Berhasil mengubah nama gambar kegiatan");
+                redirect_to("tampil_gambar_kegiatan.php");
+            }else{
+                $message = "Gagal mengubah nama gambar kegiatan";
+            }
+        }catch(PDOException $e){
+            error_notice($e);
+            $message = "Gagal mengubah nama gambar kegiatan";
+        } 
+    }else
+        $message = "Gagal mengubah nama gambar kegiatan";
+}
+
 if(isset($_POST['btnhapus'])){
     $gambar_kegiatan->id = $_POST['id2artikel'];
     $sel_gambar = $gambar_kegiatan->get_subject_by_id();
     $gambar_kegiatan->gambar = $sel_gambar['gambar'];
-    if($gambar_kegiatan->delete()){
-        $session->pesan("Berhasil menghapus gambar kegiatan");
-        redirect_to("tampil_gambar_kegiatan.php");
-    }else
-        $message = "Gagal menghapus gambar kegiatan : " . mysql_error();
+
+    try{
+        if($gambar_kegiatan->delete()){
+            $session->pesan("Berhasil menghapus gambar kegiatan");
+            redirect_to("tampil_gambar_kegiatan.php");
+        }else
+            $message = "Gagal menghapus gambar kegiatan";
+    }catch(PDOException $e){
+        error_notice($e);
+        $message = "Gagal menghapus gambar kegiatan";
+    } 
 }
  
 ?>
@@ -126,14 +156,23 @@ if(isset($_POST['btnhapus'])){
 
                     $sql_tampil = "SELECT * FROM " . gambar_kegiatan::$nama_tabel;
 
-                    $result = $database->query($sql_tampil);
-                    while($row = $database->fetch_array($result)){
+                    $database->query($sql_tampil);
+                    $database->execute();
+                    while($row = $database->fetch()){
                         $output ="<div class=\"col-lg-4\">";
                             $output .="<div class=\" panel panel-default \">";
                                 $output .="<div class=\"panel-heading\">";
-                                    $output .="<a href=\"ubah_gambar_kegiatan.php?gambar={$row['id']}\" 
-                                    			  title=\"Tekan untuk mengubah gambar kegiatan ini\"
-                                                ><b>{$row['name']}</b></a>";
+                                    if(!empty($row['name'])){
+                                        $output .="<a href=\"#\" data-toggle=\"tooltip\" data-placement=\"top\" 
+                                                        title=\"Tekan untuk mengubah nama gambar kegiatan ini\"   
+                                                        class=\"modal1\" name=\"{$row['id']}\"
+                                                        ><b>{$row['name']}</b></a>";
+                                    }else{
+                                        $output .="<a href=\"#\" data-toggle=\"tooltip\" data-placement=\"top\" 
+                                                        title=\"Tekan untuk mengubah nama gambar kegiatan ini\"   
+                                                        class=\"modal1\" name=\"{$row['id']}\"
+                                                        ><b>-</b></a>";
+                                    }
                                 $output .="</div>";
                                 $output .="<div class=\"panel-body\">";
                                     $gambar = $row['gambar'];
@@ -195,6 +234,34 @@ if(isset($_POST['btnhapus'])){
        </form>
     </div>
     <!-- /Hapus -->
+     <!-- ubah nama -->
+    <div class="modal fade" id="modal1show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+       <form role="form" action="tampil_gambar_kegiatan.php" method="post">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title ">Mengubah Nama Gambar Kegiatan</h4>
+            </div>
+            <div class="modal-body">
+              <strong>Mengubah nama gambar kegiatan </strong> 
+              <br />
+              <br />
+                    <input type="text" name="id2artikel" value="" id="modal1id" hidden>
+                    <input type="text" class="form-control" name="name" placeholder="Silahkan masukkan nama gambar kegiatan baru" />
+               <br />
+               <br />
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary" name="btnubah"
+                    id="modalbutton">Ok</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal"> Batal</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+       </form>
+    </div>
+    <!-- /ubah nama -->
     <!-- /.modal -->
 
 

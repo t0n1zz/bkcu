@@ -25,16 +25,22 @@ if(isset($_POST['btntambah'])){
         $waktu = strftime("%Y-%m-%d %H:%M:%S", $dt);
 
         $pengumuman->name = $_POST['name'];
-        $pengumuman->penulis = $_SESSION['user_id'];
+        $pengumuman->penulis = $_SESSION['bkcu_user'];
         $pengumuman->tanggal = $waktu;
-        if($pengumuman->save()){
-            $session->pesan("Berhasil menambah pengumuman baru");
-            redirect_to("tampil_pengumuman.php");
-        }else{
-            $message = "Gagal menambah pengumuman : " . mysql_error();
-        }
+
+        try{
+            if($pengumuman->save()){
+                $session->pesan("Berhasil menambah pengumuman baru");
+                redirect_to("tampil_pengumuman.php");
+            }else
+                $message = "Gagal menambah pengumuman";
+        }catch(PDOException $e){
+            error_notice($e);
+            $message = "Gagal menambah pengumuman";
+        } 
+
     }else
-        $message = "Gagal menambah pengumuman : " . mysql_error();
+        $message = "Gagal menambah pengumuman";
 }
 
 if(isset($_POST['btnubah'])){
@@ -49,27 +55,39 @@ if(isset($_POST['btnubah'])){
 
         $pengumuman->id = $_POST['idkategori'];
         $sel_pengumuman = $pengumuman->get_subject_by_id();
-        $pengumuman->name = $_POST['kategori'];
+        $pengumuman->name = $_POST['name'];
         $pengumuman->penulis = $sel_pengumuman['penulis'];
         $pengumuman->tanggal = $waktu;
-        if($pengumuman->save()){
-            $session->pesan("Berhasil mengubah pengumuman");
-            redirect_to("tampil_kategori_artikel.php");
-        }else{
-            $message = "Gagal mengubah pengumuman : " . mysql_error();
-        }
+
+        try{
+            if($pengumuman->save()){
+                $session->pesan("Berhasil mengubah pengumuman");
+                redirect_to("tampil_pengumuman.php");
+            }else
+                $message = "Gagal mengubah pengumuman";
+        }catch(PDOException $e){
+            error_notice($e);
+            $message = "Gagal mengubah pengumuman";
+        } 
+
     }else
-        $message = "Gagal mengubah pengumuman : " . mysql_error();
+        $message = "Gagal mengubah pengumuman";
 }
 
 if(isset($_POST['btnhapus'])){
     $id2kategori = $_POST['id2kategori'];
     $pengumuman->id = $id2kategori;
-    if($pengumuman->delete()){
-        $session->pesan("Berhasil Menghapus pengumuman");
-        redirect_to("tampil_pengumuman.php");
-    }else
-        $message = "Gagal menghapus pengumuman : " . mysql_error();
+
+    try{
+        if($pengumuman->delete()){
+            $session->pesan("Berhasil Menghapus pengumuman");
+            redirect_to("tampil_pengumuman.php");
+        }else
+            $message = "Gagal menghapus pengumuman";
+     }catch(PDOException $e){
+        error_notice($e);
+        $message = "Gagal menghapus pengumuman";
+    }
 }
 
 ?>
@@ -184,9 +202,15 @@ if(isset($_POST['btnhapus'])){
                         <tbody>
                         <?php
 
-                            $sql_tampil = "SELECT * FROM " .pengumuman::$nama_tabel;
-                            $result = $database->query($sql_tampil);
-                            while($row = $database->fetch_array($result)){
+                            $sql_tampil = "SELECT p.id,p.name,p.name,p.tanggal,";
+                            $sql_tampil .="ad.id as adid,ad.name as adname";
+                            $sql_tampil .=" FROM " .pengumuman::$nama_tabel. " p";
+                            $sql_tampil .=" LEFT JOIN " .admin::$nama_tabel. " ad";
+                            $sql_tampil .=" ON p.penulis = ad.id";
+                            
+                            $database->query($sql_tampil);
+                            $database->execute();
+                            while($row = $database->fetch()){
                                $output = "<tr>";
                                     if(!empty($row['id']))
                                         $output .="<td><a data-toggle=\"tooltip\" data-placement=\"top\" 
@@ -211,10 +235,8 @@ if(isset($_POST['btnhapus'])){
                                     }else
                                         $output .="<td>-</td>";
 
-                                    $admin->id = $row['penulis'];
-                                    $sel_penulis =$admin->get_subject_by_id();
-                                    if(!empty($sel_penulis))        
-                                       $output .="<td>{$sel_penulis['name']}</td>";
+                                    if(!empty($row['adid']))        
+                                       $output .="<td>{$row['adname']}</td>";
                                     else
                                        $output .="<td>-</td>";
 

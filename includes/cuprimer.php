@@ -26,11 +26,12 @@ class cuprimer{
 		return $attributes;
 	}
 	
-	public static function count_all(){
+		public static function count_all(){
 		global $database;
 		$sql = "SELECT COUNT(*) FROM " .self::$nama_tabel;
 		
 		$database->query($sql);
+		$database->execute();
 		
 		return $database->fetchColumn();
 	}
@@ -44,9 +45,9 @@ class cuprimer{
 		$database->query($sql);
 		$database->bind(':wilayah',$this->wilayah);
 
-		$row = $database->fetch();
-
-		return array_shift($row);
+		$database->execute();
+		
+		return $database->fetchColumn();
 	}
 	
 	

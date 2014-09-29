@@ -189,6 +189,24 @@ function changeFunc($i) {
 	}
 }
 
+$("#tampilinputgambar").change(function() {
+    if(this.checked) {
+        document.getElementById('inputgambar').style.display='inline';
+		document.getElementById('gambartext').value ='Iya, gambar akan muncul di list artikel dan view artikel';
+    }else{
+    	document.getElementById('inputgambar').style.display='none';
+		document.getElementById('gambartext').value ='Tidak';
+    }
+});
+
+$("#artikelpilihan").change(function() {
+    if(this.checked) {
+		document.getElementById('artikeltext').value ='Iya, artikel akan muncul di slideshow';
+    }else{
+		document.getElementById('artikeltext').value ='Tidak';
+    }
+});
+
 //ongkos kirim
 function ongkir($i){
 	var id = $i;

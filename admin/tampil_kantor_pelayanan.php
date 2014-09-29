@@ -16,11 +16,17 @@ $thispage = "tampil_kantor_pelayanan";
 
 if(isset($_POST['btnhapus'])){
     $kantor_pelayanan->id = $_POST['id2artikel'];
-    if($kantor_pelayanan->delete()){
-        $session->pesan("Berhasil menghapus informasi kantor pelayanan");
-        redirect_to("tampil_kantor_pelayanan.php");
-    }else
-        $message = "Gagal menghapus informasi kantor pelayanan : " . mysql_error();
+
+    try{
+        if($kantor_pelayanan->delete()){
+            $session->pesan("Berhasil menghapus informasi kantor pelayanan");
+            redirect_to("tampil_kantor_pelayanan.php");
+        }else
+            $message = "Gagal menghapus informasi kantor pelayanan";
+    }catch(PDOException $e){
+        error_notice($e);
+        $message = "Gagal menghapus informasi kantor pelayanan";
+    } 
 }
  
 ?>
@@ -143,8 +149,9 @@ if(isset($_POST['btnhapus'])){
 
                             $sql_tampil = "SELECT * FROM " . kantor_pelayanan::$nama_tabel;
 
-                            $result = $database->query($sql_tampil);
-                            while($row = $database->fetch_array($result)){
+                            $database->query($sql_tampil);
+                            $database->execute();
+                            while($row = $database->fetch()){
                                $output = "<tr>";
                                     if(!empty($row['id']))
                                         $output .="<td><a data-toggle=\"tooltip\" data-placement=\"top\" 

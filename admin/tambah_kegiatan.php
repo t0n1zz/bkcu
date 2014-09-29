@@ -33,21 +33,24 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
         $tanggal2 = date('Y-m-d',$timestamp2);
         $kegiatan->tanggal = $tanggal;
         $kegiatan->tanggal2 = $tanggal2;
-
-        if($kegiatan->save()){
-            if(isset($_POST['simpan'])){
-                $session->pesan("Berhasil menambah kegiatan {$name}");
-                redirect_to("tampil_kegiatan.php");
-            }
-            if(isset($_POST['simpanbaru'])){
-                $session->pesan("Kegiatan {$name} berhasil di tambah");
-                redirect_to("tambah_kegiatan.php");
-            }
-        }else{
-            $message = "Gagal menambah pelayanan : " . mysql_error();
+        try{
+            if($kegiatan->save()){
+                if(isset($_POST['simpan'])){
+                    $session->pesan("Berhasil menambah kegiatan {$name}");
+                    redirect_to("tampil_kegiatan.php");
+                }
+                if(isset($_POST['simpanbaru'])){
+                    $session->pesan("Kegiatan {$name} berhasil di tambah");
+                    redirect_to("tambah_kegiatan.php");
+                }
+            }else
+                $message = "Gagal menambah kegiatan";
+        }catch(PDOException $e){
+            $message = "Gagal menambah kegiatan";
+            error_notice($e);
         }
     }else
-        $message = "Gagal menambah pelayanan : " . mysql_error();
+        $message = "Gagal menambah kegiatan";
 }
 
 

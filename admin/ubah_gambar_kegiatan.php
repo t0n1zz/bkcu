@@ -33,7 +33,8 @@ if(isset($_POST['simpan'])){
     $errors = array_merge($errors, cek_field($field_array,$_POST));
 
     if(empty($errors)){
-    	if ($_FILES['upload_file']['error'] < 1) {
+        $error = $_FILES['upload_file']['error']; 
+    	if ($error == 0 || $error == 4) {
 
             date_default_timezone_set('Asia/Jakarta');
             $dt = time();
@@ -43,7 +44,9 @@ if(isset($_POST['simpan'])){
             $gambar_kegiatan->id = $_POST['id'];  
             $gambar_kegiatan->name = $_POST['name'];
             $name = $_POST['name'];
-            $gambar_kegiatan->upload_gambar($_FILES['upload_file']['tmp_name']);
+
+            if($error != 4)
+                $gambar_kegiatan->upload_gambar($_FILES['upload_file']['tmp_name']);
                         
             if($gambar_kegiatan->save()){
                 if(isset($_POST['simpan'])){

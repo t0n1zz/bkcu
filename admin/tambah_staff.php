@@ -41,23 +41,26 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
 	        $dt = time();
 	        $waktu = strftime("%Y-%m-%d %H:%M:%S", $dt);
 	        $staff->tanggal = $waktu;
-	        if($staff->save()){
-	            if(isset($_POST['simpan'])){
-	                $session->pesan("Berhasil menambah staff : {$name}");
-	                redirect_to("tampil_staff.php");
-	            }
-	            if(isset($_POST['simpanbaru'])){
-	                $session->pesan("staff : {$name} berhasil di tambah");
-	                redirect_to("tambah_staff.php");
-	            }
-	        }else{
-	            $message = "Gagal menambah staff : " . mysql_error();
-	        }
-	    }else{
+            try{
+    	        if($staff->save()){
+    	            if(isset($_POST['simpan'])){
+    	                $session->pesan("Berhasil menambah staff : {$name}");
+    	                redirect_to("tampil_staff.php");
+    	            }
+    	            if(isset($_POST['simpanbaru'])){
+    	                $session->pesan("staff : {$name} berhasil di tambah");
+    	                redirect_to("tambah_staff.php");
+    	            }
+    	        }else
+    	            $message = "Gagal menambah staff";
+	        }catch(PDOException $e){
+                $message = "Gagal menambah staff";
+                error_notice($e);
+            }
+	    }else
             $message = $upload_errors[$error];
-        }
     }else
-        $message = "Gagal menambah staff : " . mysql_error();
+        $message = "Gagal menambah staff";
 }
 
 

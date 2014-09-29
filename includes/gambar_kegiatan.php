@@ -57,11 +57,26 @@ class gambar_kegiatan{
 		return $array; 
 	}
 
+	public function get_subject_by_id(){
+		global $database;
+		$sql = "SELECT * ";
+		$sql .= "FROM ".self::$nama_tabel;
+		$sql .= " WHERE id = :id";
+		$sql .= " LIMIT 1";
+
+		$database->query($sql);
+		$database->bind(':id',$this->id);
+		$database->execute();
+		$array = $database->fetch();
+
+		return $array; 
+	}
+
 	protected function renamefile(){
 		$name_nospace = str_replace(' ', '', $this->name); 
 		$this->nama_lama = website .ds. $this->upload_dir .ds. $this->gambar;
-		$this->nama_gambar = website .ds. $this->upload_dir .ds. $name_nospace."-" .date('Y-m-d-H-s'). ".jpg";
-		$this->gambar = $name_nospace."-" .date('Y-m-d-H-s'). ".jpg";
+		$this->nama_gambar = website .ds. $this->upload_dir .ds. $name_nospace."-" .date('Y-m-d'). ".jpg";
+		$this->gambar = $name_nospace."-" .date('Y-m-d'). ".jpg";
 		rename($this->nama_lama,$this->nama_gambar);
 	}
 
@@ -71,7 +86,7 @@ class gambar_kegiatan{
 		$this->loadimage($file);
 		if($this->getHeight() > 720)
             $this->resize(1280,720);
-        $this->gambar = $name_nospace."-" .date('Y-m-d-H-s'). ".jpg";
+        $this->gambar = $name_nospace."-" .date('Y-m-d'). ".jpg";
 	}
 	
 
@@ -164,6 +179,20 @@ class gambar_kegiatan{
 		foreach($attributes as $key => $value){
 	        $database->bind(":$key", $value);
 	    }
+		
+		return $database->execute();
+	}
+
+	public function update_name(){
+		global $database;
+		
+		$sql ="UPDATE " .self::$nama_tabel. " SET ";
+		$sql .="name = :name";
+		$sql .=" WHERE id = :id";
+
+		$database->query($sql);
+		$database->bind(':name', $this->name);
+		$database->bind(':id', $this->id);
 		
 		return $database->execute();
 	}
