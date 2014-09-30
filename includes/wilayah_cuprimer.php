@@ -52,6 +52,18 @@ class wilayah_cuprimer{
 		return $array; 
 	}
 
+	public function validasi_duplikat(){
+		global $database;
+		$sql ="SELECT COUNT(*) FROM " .self::$nama_tabel;
+		$sql .=" WHERE name = :name";
+		
+		$database->query($sql);
+		$database->bind(':name',$this->name);
+		$database->execute();
+
+		return ($database->fetchColumn() >= 1) ? false : true;
+	}
+
 	public function save(){
 		return isset($this->id) ? $this->update() : $this->create();
 	}

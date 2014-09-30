@@ -3,11 +3,12 @@ require_once("includes/kantor_pelayanan.php");
 $sql_kantor_pelayanan = "SELECT * FROM " . kantor_pelayanan::$nama_tabel;
 $sql_kantor_pelayanan .= " WHERE id NOT IN (1)";
 
-$results = $database->query($sql_kantor_pelayanan);
-$nResults = mysql_num_rows($results);
+$database->query($sql_kantor_pelayanan);
+$database->execute();
+$nResults = $database->rowCount();
 if($nResults > 0){
    $i = 0;
-   while($row = $database->fetch_array($results)){
+   while($row = $database->fetch()){
    		if($i % 2 == 0 || $i == 0){
 			echo "<div class=\"row\">";
 		}

@@ -158,7 +158,7 @@ if(isset($_POST['btnhapus'])){
                         <?php
                             $y = "";
 
-                            $sql_tampil = "SELECT ap.id,ap.judul,ap.content,ap.status,ap.penulis,ap.tanggal,";
+                            $sql_tampil = "SELECT ap.id,ap.judul,ap.content,ap.status,ap.penulis,ap.tanggal,ap.gambar,";
                             $sql_tampil .="ad.id as adid,ad.name as adname";
                             $sql_tampil .=" FROM " .artikel_pilihan::$nama_tabel. " ap";
                             $sql_tampil .=" LEFT JOIN " .admin::$nama_tabel. " ad";

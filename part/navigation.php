@@ -45,8 +45,9 @@
 									$sql_kategori_nav = "SELECT * FROM " . kategori_artikel::$nama_tabel;
 									$sql_kategori_nav .=" WHERE id NOT IN (1,4)";
 
-									$result = $database->query($sql_kategori_nav);
-									while($row = $database->fetch_array($result)){
+									$database->query($sql_kategori_nav);
+									$database->execute();
+									while($row = $database->fetch()){
 										echo "<li><a href=\"list_artikel.php?i={$row['id']}\" >{$row['name']}</a></li>";
 									}
 								?>	
@@ -58,8 +59,9 @@
 
 									$sql_pelayanan_nav = "SELECT * FROM " . pelayanan::$nama_tabel;
 
-									$result = $database->query($sql_pelayanan_nav);
-									while($row = $database->fetch_array($result)){
+									$database->query($sql_pelayanan_nav);
+									$database->execute();
+									while($row = $database->fetch()){
 										echo "<li><a href=\"solusi.php#pelayanan{$row['id']}\" >{$row['name']}</a></li>";
 									}
 								?>	
@@ -74,8 +76,9 @@
 									$sql_kategori_nav = "SELECT * FROM " . artikel::$nama_tabel;
 									$sql_kategori_nav .=" WHERE id IN (1,2,3)";
 
-									$result = $database->query($sql_kategori_nav);
-									while($row = $database->fetch_array($result)){
+									$database->query($sql_kategori_nav);
+									$database->execute();
+									while($row = $database->fetch()){
 										echo "<li><a href=\"detail_artikel.php?i={$row['id']}\" >{$row['judul']}</a></li>";
 									}
 								?>	
@@ -125,8 +128,9 @@
 									$sql_kategori_nav2 = "SELECT * FROM " . artikel::$nama_tabel;
 									$sql_kategori_nav2 .=" WHERE id=3";
 
-									$result = $database->query($sql_kategori_nav2);
-									while($row = $database->fetch_array($result)){
+									$database->query($sql_kategori_nav2);
+									$database->execute();
+									while($row = $database->fetch()){
 										echo "<li><a href=\"sejarah_bkcu.php\" >{$row['judul']}</a></li>";
 									}
 								?>

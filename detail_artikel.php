@@ -103,7 +103,8 @@ if(isset($_POST['cari'])){
 			<div class="container">
 				<div class="row">
 					<div class="col-md-12">
-						<h1><?php echo $title; ?></h1>
+						<h1><?php echo "<a style=\"color:#FFFFFF\" 
+								  href=\"list_artikel.php?i={$tampil_artikel['kategori']}\">{$title}</a>"; ?></h1>
 					</div>
 				</div>
 			</div>
@@ -139,6 +140,12 @@ if(isset($_POST['cari'])){
 							</div>
 							<div class="single-post-content">
 							<?php
+								$gambar = str_replace(' ', '%20', $tampil_artikel['gambar']);
+								if(!empty($gambar) && is_file("images_artikel/{$gambar}"))
+									echo "<img src=\"images_artikel/{$gambar}\" class=\"img-responsive\">";
+							?>
+							<br/>
+							<?php
 								$content = html_entity_decode($tampil_artikel['content']);                            
                         		echo "{$content}";
 							?>	
@@ -168,11 +175,12 @@ if(isset($_POST['cari'])){
 						    $sql_berita .=" ORDER BY tanggal desc";
 						    $sql_berita .=" LIMIT 6";
 
-						    $results = $database->query($sql_berita);
-						    $nResults = mysql_num_rows($results);
+						    $database->query($sql_berita);
+						    $database->execute();
+						    $nResults = $database->rowCount();
 						    if($nResults > 0){
 						    	$i = 0;
-						    	while($row = $database->fetch_array($results)){
+						    	while($row = $database->fetch()){
 						    		echo "<li><a href=\"detail_artikel.php?i={$row['id']}\">{$row['judul']}</a></li>";
 						    	}
 						    }else{
@@ -186,20 +194,24 @@ if(isset($_POST['cari'])){
 						<?php
 							$query = "SELECT judul FROM " .artikel::$nama_tabel;
 		                    $query .=" WHERE id ='" .$id. "'";
-		                    $hasil = $database->query($query); 
-		                    $data = $database->fetch_array($hasil);
+		                    $database->query($query);
+		                    $database->bind(':id',$id);
+		                    $database->execute(); 
+		                    $data = $database->fetch();
 		                    $judul = $data['judul'];
 		                    $arraysementara = Array();
 
 		                    $sql_related = "SELECT * FROM " .artikel::$nama_tabel;
-		                    $sql_related .=" WHERE id <> '" .$id. "' AND ";
+		                    $sql_related .=" WHERE id <> :id AND ";
 		                    $sql_related .=" status=1 AND kategori NOT IN (1)";
 
-		                    $results = $database->query($sql_related);
-							$nResults = mysql_num_rows($results);
+		                    $database->query($sql_related);
+		                    $database->bind(':id',$id);
+		                    $database->execute();
+							$nResults = $database->rowCount();
 						    if($nResults > 0){
 						    	$i = 0;
-						    	while($row = $database->fetch_array($results)){
+						    	while($row = $database->fetch()){
 						    		echo "<li><a href=\"detail_artikel.php?i={$row['id']}\">{$row['judul']}</a></li>";
 						    	}
 						    }else{
@@ -216,10 +228,11 @@ if(isset($_POST['cari'])){
 							$sql_kategori_berita = "SELECT * FROM " . kategori_artikel::$nama_tabel;
 							$sql_kategori_berita .=" WHERE id NOT IN (1)";
 
-							$results = $database->query($sql_kategori_berita);
-							$nResults = mysql_num_rows($results);
+							$database->query($sql_kategori_berita);
+							$database->execute();
+							$nResults = $database->rowCount();
 							if($nResults > 0){
-								while($row = $database->fetch_array($results)){
+								while($row = $database->fetch()){
 									echo "<li><a href=\"list_artikel.php?i={$row['id']}\">{$row['name']}</a></li>";
 								}
 							}else{

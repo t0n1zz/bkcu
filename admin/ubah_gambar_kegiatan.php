@@ -47,20 +47,25 @@ if(isset($_POST['simpan'])){
 
             if($error != 4)
                 $gambar_kegiatan->upload_gambar($_FILES['upload_file']['tmp_name']);
-                        
-            if($gambar_kegiatan->save()){
-                if(isset($_POST['simpan'])){
-                    $session->pesan("Berhasil mengubah gambar kegiatan {$name}");
-                    redirect_to("tampil_gambar_kegiatan.php");
+                 
+            try{            
+                if($gambar_kegiatan->save()){
+                    if(isset($_POST['simpan'])){
+                        $session->pesan("Berhasil mengubah gambar kegiatan {$name}");
+                        redirect_to("tampil_gambar_kegiatan.php");
+                    }
+                }else{
+                    $message = "Gagal mengubah gambar kegiatan";
                 }
-            }else{
-                $message = "Gagal mengubah gambar kegiatan : " . mysql_error();
-            }
+            }catch(PDOException $e){
+                $message = "Gagal mengubah gambar kegiatan";
+                error_notice($e);
+            } 
 		} else{
             $message = $upload_errors[$error];
 	    }
     }else
-        $message = "Gagal mengubah gambar kegiatan : " . mysql_error();
+        $message = "Gagal mengubah gambar kegiatan";
 }
 
 

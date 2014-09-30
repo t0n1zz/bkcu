@@ -125,11 +125,12 @@ $tampil_artikel = $artikel->get_artikel_by_id();
                     require_once("includes/staff.php");
                     $sql_tim = "SELECT * FROM " . staff::$nama_tabel;
 
-                    $results = $database->query($sql_tim);
-                    $nResults = mysql_num_rows($results);
+                    $database->query($sql_tim);
+                    $database->execute();
+                    $nResults = $database->rowCount();
                     if($nResults > 0){
                         $i = 0;
-                        while($row = $database->fetch_array($results)){
+                        while($row = $database->fetch()){
                             $output ="";
                             if($i % 4 == 0 || $i == 0){
                                 $output .="<div class=\"row\">";
@@ -175,10 +176,11 @@ $tampil_artikel = $artikel->get_artikel_by_id();
                         $sql_kantor_pusat = "SELECT * FROM " . kantor_pelayanan::$nama_tabel;
                         $sql_kantor_pusat .= " WHERE id=1";
 
-                        $results = $database->query($sql_kantor_pusat);
-                        $nResults = mysql_num_rows($results);
+                        $database->query($sql_kantor_pusat);
+                        $database->execute();
+                        $nResults = $database->rowCount();
                         if($nResults > 0){
-                           while($row = $database->fetch_array($results)){
+                           while($row = $database->fetch()){
                                 $output ="<h3>Puskopdit BKCU Kalimantan <br/><small>{$row['name']}</small></h3><br>";
                                 if(!empty($row['alamat']))
                                     $output .="{$row['alamat']}<br>";

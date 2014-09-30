@@ -111,10 +111,11 @@ require_once("includes/wilayah_cuprimer.php")
 					                $sql_jejaring = "SELECT * FROM " .cuprimer::$nama_tabel;
 					                $sql_jejaring .= " WHERE wilayah=1";
 
-					                $results = $database->query($sql_jejaring);
-					                $nResults = mysql_num_rows($results);
+					                $database->query($sql_jejaring);
+					                $database->execute();
+					                $nResults = $database->rowCount();
 					                if($nResults > 0){
-					                    while($row = $database->fetch_array($results)){ 
+					                    while($row = $database->fetch()){ 
 					                    	echo "<li><a class=\"smoothscroll\" href=\"#{$row['id']}\">{$row['name']}</a></li>";
 					                    }
 					                }else{
@@ -130,10 +131,11 @@ require_once("includes/wilayah_cuprimer.php")
 					                $sql_jejaring = "SELECT * FROM " .cuprimer::$nama_tabel;
 					                $sql_jejaring .= " WHERE wilayah=2";
 
-					                $results = $database->query($sql_jejaring);
-					                $nResults = mysql_num_rows($results);
+					                $database->query($sql_jejaring);
+					                $database->execute();
+					                $nResults = $database->rowCount();
 					                if($nResults > 0){
-					                    while($row = $database->fetch_array($results)){ 
+					                    while($row = $database->fetch()){ 
 					                    	echo "<li><a class=\"smoothscroll\" href=\"#{$row['id']}\">{$row['name']}</a></li>";
 					                    }
 					                }else{
@@ -150,9 +152,10 @@ require_once("includes/wilayah_cuprimer.php")
 					                $sql_jejaring .= " WHERE wilayah=3";
 
 					                $results = $database->query($sql_jejaring);
-					                $nResults = mysql_num_rows($results);
+					                $database->execute();
+					                $nResults = $database->rowCount();
 					                if($nResults > 0){
-					                    while($row = $database->fetch_array($results)){ 
+					                    while($row = $database->fetch()){ 
 					                    	echo "<li><a class=\"smoothscroll\" href=\"#{$row['id']}\">{$row['name']}</a></li>";
 					                    }
 					                }else{
@@ -169,9 +172,10 @@ require_once("includes/wilayah_cuprimer.php")
 					                $sql_jejaring .= " WHERE wilayah=10";
 
 					                $results = $database->query($sql_jejaring);
-					                $nResults = mysql_num_rows($results);
+					                $database->execute();
+					                $nResults = $database->rowCount();
 					                if($nResults > 0){
-					                    while($row = $database->fetch_array($results)){ 
+					                    while($row = $database->fetch()){ 
 					                    	echo "<li><a class=\"smoothscroll\" href=\"#{$row['id']}\">{$row['name']}</a></li>";
 					                    }
 					                }else{
@@ -192,9 +196,10 @@ require_once("includes/wilayah_cuprimer.php")
 					                $sql_jejaring .= " WHERE wilayah=4";
 
 					                $results = $database->query($sql_jejaring);
-					                $nResults = mysql_num_rows($results);
+					                $database->execute();
+					                $nResults = $database->rowCount();
 					                if($nResults > 0){
-					                    while($row = $database->fetch_array($results)){ 
+					                    while($row = $database->fetch()){ 
 					                    	echo "<li><a class=\"smoothscroll\" href=\"#{$row['id']}\">{$row['name']}</a></li>";
 					                    }
 					                }else{
@@ -211,9 +216,10 @@ require_once("includes/wilayah_cuprimer.php")
 					                $sql_jejaring .= " WHERE wilayah=5";
 
 					                $results = $database->query($sql_jejaring);
-					                $nResults = mysql_num_rows($results);
+					                $database->execute();
+					                $nResults = $database->rowCount();
 					                if($nResults > 0){
-					                    while($row = $database->fetch_array($results)){ 
+					                    while($row = $database->fetch()){ 
 					                    	echo "<li><a class=\"smoothscroll\" href=\"#{$row['id']}\">{$row['name']}</a></li>";
 					                    }
 					                }else{
@@ -230,9 +236,10 @@ require_once("includes/wilayah_cuprimer.php")
 					                $sql_jejaring .= " WHERE wilayah=6";
 
 					                $results = $database->query($sql_jejaring);
-					                $nResults = mysql_num_rows($results);
+					                $database->execute();
+					                $nResults = $database->rowCount();
 					                if($nResults > 0){
-					                    while($row = $database->fetch_array($results)){ 
+					                    while($row = $database->fetch()){  
 					                    	echo "<li><a class=\"smoothscroll\" href=\"#{$row['id']}\">{$row['name']}</a></li>";
 					                    }
 					                }else{
@@ -253,9 +260,10 @@ require_once("includes/wilayah_cuprimer.php")
 					                $sql_jejaring .= " WHERE wilayah=7";
 
 					                $results = $database->query($sql_jejaring);
-					                $nResults = mysql_num_rows($results);
+					                $database->execute();
+					                $nResults = $database->rowCount();
 					                if($nResults > 0){
-					                    while($row = $database->fetch_array($results)){ 
+					                    while($row = $database->fetch()){ 
 					                    	echo "<li><a class=\"smoothscroll\" href=\"#{$row['id']}\">{$row['name']}</a></li>";
 					                    }
 					                }else{
@@ -272,9 +280,10 @@ require_once("includes/wilayah_cuprimer.php")
 					                $sql_jejaring .= " WHERE wilayah=8";
 
 					                $results = $database->query($sql_jejaring);
-					                $nResults = mysql_num_rows($results);
+					                $database->execute();
+					                $nResults = $database->rowCount();
 					                if($nResults > 0){
-					                    while($row = $database->fetch_array($results)){ 
+					                    while($row = $database->fetch()){ 
 					                    	echo "<li><a class=\"smoothscroll\" href=\"#{$row['id']}\">{$row['name']}</a></li>";
 					                    }
 					                }else{
@@ -291,9 +300,10 @@ require_once("includes/wilayah_cuprimer.php")
 					                $sql_jejaring .= " WHERE wilayah=9";
 
 					                $results = $database->query($sql_jejaring);
-					                $nResults = mysql_num_rows($results);
+					                $database->execute();
+					                $nResults = $database->rowCount();
 					                if($nResults > 0){
-					                    while($row = $database->fetch_array($results)){ 
+					                    while($row = $database->fetch()){ 
 					                    	echo "<li><a class=\"smoothscroll\" href=\"#{$row['id']}\">{$row['name']}</a></li>";
 					                    }
 					                }else{
@@ -313,11 +323,12 @@ require_once("includes/wilayah_cuprimer.php")
 	    	<?php
 	    		$sql_wilayah_cu = "SELECT * FROM " .wilayah_cuprimer::$nama_tabel;
 
-		    	$results = $database->query($sql_wilayah_cu);
-				$nResults = mysql_num_rows($results);
+		    	$database->query($sql_wilayah_cu);
+		    	$database->execute();
+				$nResults = $database->rowCount();
 				if($nResults > 0){
 					
-					while($row = $database->fetch_array($results)){
+					while($row = $database->fetch()){
 
 						$output ="<h2 id=A{$row['id']}>CU Wilayah {$row['name']}</h2>";
 						$output .="<div class=\"row\">";
@@ -325,11 +336,11 @@ require_once("includes/wilayah_cuprimer.php")
 							$sql_cu = "SELECT * FROM " .cuprimer::$nama_tabel; 
 						    $sql_cu .=" WHERE wilayah={$row['id']}";
 
-						    $results2 = $database->query($sql_cu);
-						    $nResults2 = mysql_num_rows($results2);
+						    $results2 = $database->dbh->query($sql_cu);
+						    $nResults2 = $results2->rowCount();
 						    if($nResults2 > 0){
 						    	$i = 0;
-						    	while($row2 = $database->fetch_array($results2)){
+						    	while($row2 = $results2->fetch()){
 						    		
 						    		if($i % 4 == 0 || $i == 0){
 										$output .="<div class=\"row\">";

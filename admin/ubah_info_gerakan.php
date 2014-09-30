@@ -25,13 +25,18 @@ if(isset($_POST['simpan'])){
   	$info_gerakan->asset= $_POST['asset'];
   	$info_gerakan->shu = $_POST['shu'];
 
-    if($info_gerakan->save()){
-        if(isset($_POST['simpan'])){
-            $session->pesan("Informasi Gerakan berhasil di ubah");
-            redirect_to("ubah_info_gerakan.php");
-        }
-    }else
-         $message = "Gagal mengubah Informasi Gerakan : " . mysql_error();
+    try{
+      if($info_gerakan->save()){
+          if(isset($_POST['simpan'])){
+              $session->pesan("Informasi Gerakan berhasil di ubah");
+              redirect_to("ubah_info_gerakan.php");
+          }
+      }else
+           $message = "Gagal mengubah Informasi Gerakan";
+    }catch(PDOException $e){
+        $message = "Gagal mengubah Informasi Gerakan";
+        error_notice($e);
+    } 
 }
 
 ?>

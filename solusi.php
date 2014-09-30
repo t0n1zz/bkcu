@@ -54,8 +54,9 @@ require_once("includes/pelayanan.php");
 		            $i = 1;
 		            $pos = "";
 
-		            $result = $database->query($sql_pelayanan);
-		            while($row = $database->fetch_array($result)){
+		            $database->query($sql_pelayanan);
+		            $database->execute();
+		            while($row = $database->fetch()){
 		                if($i % 2 == 0){
 		                    $pos = 2;
 		                }else if($i % 3 == 0){

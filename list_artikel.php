@@ -51,7 +51,15 @@ if(isset($_GET['i'])){
 		    <link rel="stylesheet" href="css/leaflet.ie.css" />
 		<![endif]-->
 		<link rel="stylesheet" href="css/main.css">
-
+		<style type="text/css">
+		#ticker {
+		    height: 40px;
+		    overflow: hidden;
+		}
+		#ticker li {
+		    height: 40px;
+		}
+		</style>
         <script src="js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     </head>
     <body>
@@ -74,16 +82,21 @@ if(isset($_GET['i'])){
 			</div>
 		</div>
 
+		<!-- pengumuman-->
+		<?php include("part/pengumuman.php"); ?>
+		<!-- End pengumuman -->
+
 		<!-- Posts List -->
         <div class="section blog-posts-wrapper">
 	    	<div class="container">
 		    	<div class="row">
 	    		<?php
-	    		$results = $database->query($sql_artikel);
-				$nResults = mysql_num_rows($results);
+	    		$database->query($sql_artikel);
+	    		$database->execute();
+				$nResults = $database->rowCount();
 				if($nResults > 0){
 					$i = 0;
-				   while($row = $database->fetch_array($results)){
+				   while($row = $database->fetch()){
 				   		$output ="";
 				   		if($i % 3 == 0 || $i == 0){
 							$output .="<div class=\"row\">";
@@ -91,6 +104,10 @@ if(isset($_GET['i'])){
 
 						$output .="<div class=\"col-md-4 col-sm-6\">";
 							$output .="<div class=\"blog-post\">";
+							$gambar = str_replace(' ', '%20', $row['gambar']);
+							if(!empty($gambar) && is_file("images_artikel/{$gambar}"))
+								$output .="<img src=\"images_artikel/{$gambar}\" class=\"post-image\" alt=\"Post Title\">";
+
 								$output .="<div class=\"post-title\">";
 									$output .="<h3><a href=\"detail_artikel.php?i={$row['id']}\">{$row['judul']}</a></h3>";
 								$output .="</div>";
@@ -98,9 +115,9 @@ if(isset($_GET['i'])){
 								$phpdate = strtotime( $row['tanggal'] );
 	                            $mysqldate = date( 'F j, Y, g:i a ', $phpdate );
 
-	                            $output .="<div class=\"date\" style=\"font-size: 14px;\">{$mysqldate}</div><br /> ";
+	                            $output .="<div class=\"date\" style=\"font-size: 14px;\"><i class=\"fa fa-clock-o\"></i> {$mysqldate}</div><br/> ";
 									$content = html_entity_decode($row['content']);
-						  			$content = strip_tags($content,'<p>');
+						  			$content = strip_tags($content);
 					                $x = $content;
 					                if(strlen($x)<=400)
 					                	$y = $x;
@@ -123,8 +140,8 @@ if(isset($_GET['i'])){
 				}else{
 					$output ="<div class=\"col-md-12 col-sm-12\">";
 						$output .="<div class=\"blog-post\">";
-								$output .="<div class=\"post-title\">";
-								$output .="<h3>Tidak terdapat artikel</h3>";
+								$output .="<div class=\"post-summary\">";
+								$output .="<h3>Belum terdapat artikel...</h3>";
 							$output .="</div>";
 						$output .="</div>";
 					$output .="</div>";

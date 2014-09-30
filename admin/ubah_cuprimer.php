@@ -38,40 +38,45 @@ if(isset($_POST['simpan'])){
         $waktu = strftime("%Y-%m-%d %H:%M:%S", $dt);
         $cuprimer->tanggal = $waktu;
 
-        if($_POST['kategori'] == "tambah"){
-            $wilayah_cuprimer->name = $_POST['kategori_baru'];
-            if($wilayah_cuprimer->validasi_duplikat()){
-                if($wilayah_cuprimer->save()){
-                    $wilayah_cuprimer->name = $_POST['kategori_baru'];
-                    $sel_kategori = $wilayah_cuprimer->get_kategori();
-                    $cuprimer->wilayah = $sel_kategori['id'];
-                    if($cuprimer->save()){
-                        if(isset($_POST['simpan'])){
-                            $session->pesan("Informasi CU {$name} berhasil di simpan");
-                            redirect_to("tampil_cuprimer.php");
+        try{
+            if($_POST['kategori'] == "tambah"){
+                $wilayah_cuprimer->name = $_POST['kategori_baru'];
+                if($wilayah_cuprimer->validasi_duplikat()){
+                    if($wilayah_cuprimer->save()){
+                        $wilayah_cuprimer->name = $_POST['kategori_baru'];
+                        $sel_kategori = $wilayah_cuprimer->get_kategori();
+                        $cuprimer->wilayah = $sel_kategori['id'];
+                        if($cuprimer->save()){
+                            if(isset($_POST['simpan'])){
+                                $session->pesan("Informasi cu {$name} berhasil di simpan");
+                                redirect_to("tampil_cuprimer.php");
+                            }
+                        }else{
+                            $message = "Gagal menambah informasi cu";
                         }
                     }else{
-                        $message = "Gagal menambah informasi CU Primer : " . mysql_error();
+                        $message = "Gagal menambah wilayah cu";
                     }
                 }else{
-                    $message = "Gagal menambah wilayah CU Primer : " . mysql_error();
+                    $message = "Gagal menambah wilayah cu : Wilayah sudah ada";
                 }
             }else{
-                $message = "Gagal menambah wilayah CU Primer : Wilayah sudah ada";
-            }
-        }else{
-            $cuprimer->wilayah = $_POST['kategori'];
-            if($cuprimer->save()){
-                if(isset($_POST['simpan'])){
-                    $session->pesan("Informasi CU {$name} berhasil di ubah");
-                    redirect_to("tampil_cuprimer.php");
+                $cuprimer->wilayah = $_POST['kategori'];
+                if($cuprimer->save()){
+                    if(isset($_POST['simpan'])){
+                        $session->pesan("Informasi cu {$name} berhasil di ubah");
+                        redirect_to("tampil_cuprimer.php");
+                    }
+                }else{
+                    $message = "Gagal mengubah informasi cu";
                 }
-            }else{
-                $message = "Gagal mengubah informasi CU Primer : " . mysql_error();
             }
-        }
+        }catch(PDOException $e){
+            $message = "Gagal mengubah informasi cu";
+            error_notice($e);
+        } 
     }else
-        $message = "Gagal mengubah informasi CU Primer : " . mysql_error();
+        $message = "Gagal mengubah informasi cu";
 }
 
 
@@ -211,8 +216,9 @@ if(isset($_POST['batal'])){
                             <select class="form-control" onChange="changeFunc(value);" name="kategori">
                             <option >Pilih Wilayah</option>
                             <?php
-                                $result = $database->query("select * from ". wilayah_cuprimer::$nama_tabel);
-                                while($row =$database->fetch_array($result)){
+                                $database->query("select * from ". wilayah_cuprimer::$nama_tabel);
+                                $database->execute();
+                                while($row =$database->fetch()){
                                     $output = "<option value=\"{$row['id']}\"";
                                     if($sel_cu['wilayah'] == $row['id'])
                                         $output .=" selected ";

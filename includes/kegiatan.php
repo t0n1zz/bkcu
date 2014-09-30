@@ -35,6 +35,7 @@ class kegiatan{
 		$sql = "SELECT COUNT(*) FROM " .self::$nama_tabel;
 		
 		$database->query($sql);
+		$database->execute();
 		
 		return $database->fetchColumn();
 	}

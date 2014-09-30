@@ -29,15 +29,20 @@ if(isset($_POST['simpan']) || isset($_POST['simpanbaru'])){
     	$kantor_pelayanan->fax = $_POST['fax'];
     	$kantor_pelayanan->email = $_POST['email'];
 
+      try{
         if($kantor_pelayanan->save()){
             if(isset($_POST['simpan'])){
                 $session->pesan("Kantor Pelayanan {$name} berhasil di ubah");
                 redirect_to("tampil_kantor_pelayanan.php");
             }
         }else
-             $message = "Gagal mengubah Kantor Pelayanan: " . mysql_error();
+             $message = "Gagal mengubah Kantor Pelayanan";
+      }catch(PDOException $e){
+          $message = "Gagal mengubah Kantor Pelayanan";
+          error_notice($e);
+      }
     }else
-        $message = "Gagal mengubah Kantor Pelayanan" . mysql_error();
+        $message = "Gagal mengubah Kantor Pelayanan";
 }
 
 

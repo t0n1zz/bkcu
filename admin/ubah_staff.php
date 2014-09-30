@@ -33,7 +33,8 @@ if(isset($_POST['simpan'])){
     $errors = array_merge($errors, cek_field($field_array,$_POST));
 
     if(empty($errors)){
-    	if ($_FILES['upload_file']['error'] < 1) {
+        $error = $_FILES['upload_file']['error'];
+    	if ($error == 0 || $error == 4) {
 
             date_default_timezone_set('Asia/Jakarta');
             $dt = time();
@@ -44,21 +45,28 @@ if(isset($_POST['simpan'])){
             $staff->name = $_POST['name'];
             $name = $_POST['name'];
             $staff->jabatan = $_POST['jabatan'];
-            $staff->upload_gambar($_FILES['upload_file']['tmp_name']);
-                        
-            if($staff->save()){
-                if(isset($_POST['simpan'])){
-                    $session->pesan("Berhasil mengubah staff : {$name}");
-                    redirect_to("tampil_staff.php");
+
+            if($error != 4)
+                $staff->upload_gambar($_FILES['upload_file']['tmp_name']);
+                     
+            try{   
+                if($staff->save()){
+                    if(isset($_POST['simpan'])){
+                        $session->pesan("Berhasil mengubah staff : {$name}");
+                        redirect_to("tampil_staff.php");
+                    }
+                }else{
+                    $message = "Gagal mengubah staff";
                 }
-            }else{
-                $message = "Gagal mengubah staff : " . mysql_error();
-            }
+            }catch(PDOException $e){
+                $message = "Gagal mengubah staff";
+                error_notice($e);
+            } 
 		} else{
             $message = $upload_errors[$error];
 	    }
     }else
-        $message = "Gagal mengubah staff : " . mysql_error();
+        $message = "Gagal mengubah staff";
 }
 
 

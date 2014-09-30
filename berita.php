@@ -22,6 +22,15 @@ require_once("includes/database.php");
 		    <link rel="stylesheet" href="css/leaflet.ie.css" />
 		<![endif]-->
 		<link rel="stylesheet" href="css/main.css">
+		<style type="text/css">
+		#ticker {
+		    height: 40px;
+		    overflow: hidden;
+		}
+		#ticker li {
+		    height: 40px;
+		}
+		</style>
 
         <script src="js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     </head>
@@ -54,8 +63,13 @@ require_once("includes/database.php");
         <div class="section">
 	    	<div class="container">
 				<?php 
-					$sql_kategori_berita = "SELECT * FROM " . kategori_artikel::$nama_tabel;
-					$sql_kategori_berita .=" WHERE id NOT IN (1,4)";
+					$sql_kategori_berita = "SELECT k.id,k.name,ar.kategori,count(ar.kategori) as countartikel";
+					$sql_kategori_berita .=" FROM " .kategori_artikel::$nama_tabel. " k";
+					$sql_kategori_berita .=" LEFT JOIN " .artikel::$nama_tabel. " ar";
+					$sql_kategori_berita .=" ON k.id = ar.kategori";
+					$sql_kategori_berita .=" WHERE k.id NOT IN (1,4)";
+					$sql_kategori_berita .=" GROUP BY k.id";
+					$fullpage = 1; 
 					include("part/berita.php"); 
 				?>
 			</div>

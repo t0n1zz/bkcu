@@ -11,11 +11,10 @@ if(isset($_POST['cari'])){
 	redirect_to("cari.php?cari={$cari}");
 }elseif(isset($_GET['cari'])){
 	if(preg_match("/^[  a-zA-Z]+/", $_GET['cari'])){ 
-		$cari = $database->escape_value($_GET['cari']);
+		$cari = $_GET['cari'];
 		$cari2 = explode(" ", $cari);
 		$kondisi_cari = "judul LIKE '%" . implode("%' AND judul LIKE '%", $cari2) . "%'";
 		$sql_cari = "SELECT * FROM ". artikel::$nama_tabel ." WHERE " .$kondisi_cari. " AND status=1 AND kategori NOT IN (1)";
-		$sql_cari2 = "SELECT * FROM ". artikel_pilihan::$nama_tabel ." WHERE " .$kondisi_cari;
 		$title = "Pencarian Artikel : <i>" .$cari. "</i>";	
 	}else{
 		redirect_to("wrong.php");
@@ -82,11 +81,12 @@ if(isset($_POST['cari'])){
 	    	<div class="container">
 		    	<div class="row">
 	    		<?php
-	    		$results = $database->query($sql_cari);
-				$nResults = mysql_num_rows($results);
+	    		$database->query($sql_cari);
+	    		$database->execute();
+				$nResults = $database->rowCount();
 				if($nResults > 0){
 					$i = 0;
-				   while($row = $database->fetch_array($results)){
+				   while($row = $database->fetch()){
 				   		$output ="";
 				   		if($i % 3 == 0 || $i == 0){
 							$output .="<div class=\"row\">";
@@ -124,100 +124,14 @@ if(isset($_POST['cari'])){
 						echo $output;
 				   }
 				}else{
-					$results = $database->query($sql_cari2);
-					$nResults = mysql_num_rows($results);
-					if($nResults > 0){
-						$i = 0;
-					   while($row = $database->fetch_array($results)){
-					   		$output ="";
-					   		if($i % 3 == 0 || $i == 0){
-								$output .="<div class=\"row\">";
-							}
-
-							$output .="<div class=\"col-md-4 col-sm-6\">";
-								$output .="<div class=\"blog-post\">";
-									$output .="<div class=\"post-title\">";
-										$output .="<h3><a href=\"detail_artikel.php?i={$row['id']}\">{$row['judul']}</a></h3>";
-									$output .="</div>";
-									$output .="<div class=\"post-summary\">";
-									$phpdate = strtotime( $row['tanggal'] );
-		                            $mysqldate = date( 'F j, Y, g:i a ', $phpdate );
-
-		                            $output .="<div class=\"date\" style=\"font-size: 14px;\">{$mysqldate}</div><br /> ";
-										$content = html_entity_decode($row['content']);
-							  			$content = strip_tags($content,'<p>');
-						                $x = $content;
-						                if(strlen($x)<=400)
-						                	$y = $x;
-						                else
-						                	$y=substr($x,0,400) . '...';
-										$output .="<p>{$y}</p>";
-									$output .="</div>";
-									$output .="<div class=\"post-more\">";
-										$output .="<a href=\"detail_artikel.php?i={$row['id']}\" class=\"btn btn-small\">Selengkapnya &raquo</a>";
-									$output .="</div>";
-								$output .="</div>";
-							$output .="</div>";
-
-							$i++;	
-							if($i % 3 == 0 || $i == $nResults){
-								$output .="</div>";
-							}
-							echo $output;
-					   }
-					}else{
-						$output ="<div class=\"col-md-12 col-sm-12\">";
-							$output .="<div class=\"blog-post\">";
-									$output .="<div class=\"post-title\">";
-									$output .="<h3>Tidak terdapat artikel yang dicari</h3>";
-								$output .="</div>";
-							$output .="</div>";
-						$output .="</div>";
-						echo $output;
-					}
-				}
-
-				$results = $database->query($sql_cari2);
-				$nResults = mysql_num_rows($results);
-				if($nResults > 0){
-					$i = 0;
-				   while($row = $database->fetch_array($results)){
-				   		$output ="";
-				   		if($i % 3 == 0 || $i == 0){
-							$output .="<div class=\"row\">";
-						}
-
-						$output .="<div class=\"col-md-4 col-sm-6\">";
-							$output .="<div class=\"blog-post\">";
+					$output ="<div class=\"col-md-12 col-sm-12\">";
+						$output .="<div class=\"blog-post\">";
 								$output .="<div class=\"post-title\">";
-									$output .="<h3><a href=\"detail_artikel.php?i={$row['id']}\">{$row['judul']}</a></h3>";
-								$output .="</div>";
-								$output .="<div class=\"post-summary\">";
-								$phpdate = strtotime( $row['tanggal'] );
-	                            $mysqldate = date( 'F j, Y, g:i a ', $phpdate );
-
-	                            $output .="<div class=\"date\" style=\"font-size: 14px;\">{$mysqldate}</div><br /> ";
-									$content = html_entity_decode($row['content']);
-						  			$content = strip_tags($content,'<p>');
-					                $x = $content;
-					                if(strlen($x)<=400)
-					                	$y = $x;
-					                else
-					                	$y=substr($x,0,400) . '...';
-									$output .="<p>{$y}</p>";
-								$output .="</div>";
-								$output .="<div class=\"post-more\">";
-									$output .="<a href=\"detail_artikel.php?i={$row['id']}\" class=\"btn btn-small\">Selengkapnya &raquo</a>";
-								$output .="</div>";
+								$output .="<h3>Tidak terdapat artikel yang dicari</h3>";
 							$output .="</div>";
 						$output .="</div>";
-
-						$i++;	
-						if($i % 3 == 0 || $i == $nResults){
-							$output .="</div>";
-						}
-						echo $output;
-				   }
+					$output .="</div>";
+					echo $output;
 				}
 	    		?>
 				</div>

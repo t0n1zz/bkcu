@@ -84,8 +84,9 @@ if(isset($_GET['januari'])){
 	                else
 	                    echo "btn btn-default";
 	                    $sql_kegiatan_0 = "SELECT * FROM " .kegiatan::$nama_tabel;
-	                    $bln0 = $database->query($sql_kegiatan_0);
-	                    $nbln0 = mysql_num_rows($bln0);
+	                    $database->query($sql_kegiatan_0);
+	                    $database->execute();
+	                    $nbln0 = $database->rowCount();
 	            ?> btn-block"><b>Semua Kegiatan</b> <span class="badge"><?php echo $nbln0; ?></span></a>
 	          	<br />
 	          	<br />
@@ -99,8 +100,9 @@ if(isset($_GET['januari'])){
 		                        echo "btn btn-default";
 		                    $sql_kegiatan_1 = "SELECT * FROM " .kegiatan::$nama_tabel;
 		                    $sql_kegiatan_1 .= " WHERE DATE_FORMAT(tanggal,'%c')='1'";
-		                    $bln1 = $database->query($sql_kegiatan_1);
-		                    $nbln1 = mysql_num_rows($bln1);
+		                    $database->query($sql_kegiatan_1);
+		                    $database->execute();
+		                    $nbln1 =$database->rowCount();
 		                ?>"><b>January</b> <span class="badge"><?php echo $nbln1; ?></span></a>
 		            </div>
 		            <div class="btn-group">
@@ -112,8 +114,9 @@ if(isset($_GET['januari'])){
 		                        echo "btn btn-default";
 		                    $sql_kegiatan_2 = "SELECT * FROM " .kegiatan::$nama_tabel;
 		                    $sql_kegiatan_2 .= " WHERE DATE_FORMAT(tanggal,'%c')='2'";
-		                    $bln2 = $database->query($sql_kegiatan_2);
-		                    $nbln2 = mysql_num_rows($bln2);
+		                    $database->query($sql_kegiatan_2);
+		                    $database->execute();
+		                    $nbln2 = $database->rowCount();
 		                ?>"><b>Februari</b> <span class="badge"><?php echo $nbln2; ?></span></a>
 		            </div>
 		            <div class="btn-group">
@@ -125,8 +128,9 @@ if(isset($_GET['januari'])){
 		                        echo "btn btn-default";
 		                    $sql_kegiatan_3 = "SELECT * FROM " .kegiatan::$nama_tabel;
 		                    $sql_kegiatan_3 .= " WHERE DATE_FORMAT(tanggal,'%c')='3'";
-		                    $bln3 = $database->query($sql_kegiatan_3);
-		                    $nbln3 = mysql_num_rows($bln3);
+		                    $database->query($sql_kegiatan_3);
+		                    $database->execute();
+		                    $nbln3 = $database->rowCount();
 		                ?>"><b>Maret</b> <span class="badge"><?php echo $nbln3; ?></span></a>
 		            </div>
 		            <div class="btn-group">
@@ -138,8 +142,9 @@ if(isset($_GET['januari'])){
 		                        echo "btn btn-default";
 		                    $sql_kegiatan_4 = "SELECT * FROM " .kegiatan::$nama_tabel;
 		                    $sql_kegiatan_4 .= " WHERE DATE_FORMAT(tanggal,'%c')='4'";
-		                    $bln4 = $database->query($sql_kegiatan_4);
-		                    $nbln4 = mysql_num_rows($bln4);
+		                    $database->query($sql_kegiatan_4);
+		                    $database->execute();
+		                    $nbln4 = $database->rowCount();
 		                ?>"><b>April</b> <span class="badge"><?php echo $nbln4; ?></span></a>
 		            </div>
 		            <div class="btn-group">
@@ -151,8 +156,9 @@ if(isset($_GET['januari'])){
 		                        echo "btn btn-default";
 		                    $sql_kegiatan_5 = "SELECT * FROM " .kegiatan::$nama_tabel;
 		                    $sql_kegiatan_5 .= " WHERE DATE_FORMAT(tanggal,'%c')='5'";
-		                    $bln5 = $database->query($sql_kegiatan_5);
-		                    $nbln5 = mysql_num_rows($bln5);
+		                    $database->query($sql_kegiatan_5);
+		                    $database->execute();
+		                    $nbln5 = $database->rowCount();;
 		                ?>"><b>Mei</b> <span class="badge"><?php echo $nbln5; ?></span></a>
 		            </div>
 		            <div class="btn-group">
@@ -164,8 +170,9 @@ if(isset($_GET['januari'])){
 		                        echo "btn btn-default";
 		                    $sql_kegiatan_6 = "SELECT * FROM " .kegiatan::$nama_tabel;
 		                    $sql_kegiatan_6 .= " WHERE DATE_FORMAT(tanggal,'%c')='6'";
-		                    $bln6 = $database->query($sql_kegiatan_6);
-		                    $nbln6 = mysql_num_rows($bln6);
+		                    $database->query($sql_kegiatan_6);
+		                    $database->execute();
+		                    $nbln6 = $database->rowCount();;
 		                ?>"><b>Juni</b> <span class="badge"><?php echo $nbln6; ?></span></a>
 		            </div>
 		        </div>
@@ -181,8 +188,9 @@ if(isset($_GET['januari'])){
 		                        echo "btn btn-default";
 		                    $sql_kegiatan_7 = "SELECT * FROM " .kegiatan::$nama_tabel;
 		                    $sql_kegiatan_7 .= " WHERE DATE_FORMAT(tanggal,'%c')='7'";
-		                    $bln7 = $database->query($sql_kegiatan_7);
-		                    $nbln7 = mysql_num_rows($bln7);
+		                    $database->query($sql_kegiatan_7);
+		                    $database->execute();
+		                    $nbln7 = $database->rowCount();
 		                ?>"><b>Juli</b> <span class="badge"><?php echo $nbln7; ?></span></a>
 		            </div>
 		            <div class="btn-group">
@@ -194,8 +202,9 @@ if(isset($_GET['januari'])){
 		                        echo "btn btn-default";
 		                    $sql_kegiatan_8 = "SELECT * FROM " .kegiatan::$nama_tabel;
 		                    $sql_kegiatan_8 .= " WHERE DATE_FORMAT(tanggal,'%c')='8'";
-		                    $bln8 = $database->query($sql_kegiatan_8);
-		                    $nbln8 = mysql_num_rows($bln8);
+		                    $database->query($sql_kegiatan_8);
+		                    $database->execute();
+		                    $nbln8 = $database->rowCount();
 		                ?>"><b>Agustus</b> <span class="badge"><?php echo $nbln8; ?></span></a>
 		            </div>
 		            <div class="btn-group">
@@ -207,8 +216,9 @@ if(isset($_GET['januari'])){
 		                        echo "btn btn-default";
 		                    $sql_kegiatan_9 = "SELECT * FROM " .kegiatan::$nama_tabel;
 		                    $sql_kegiatan_9 .= " WHERE DATE_FORMAT(tanggal,'%c')='9'";
-		                    $bln9 = $database->query($sql_kegiatan_9);
-		                    $nbln9 = mysql_num_rows($bln9);
+		                    $database->query($sql_kegiatan_9);
+		                    $database->execute();
+		                    $nbln9 = $database->rowCount();
 		                ?>"><b>September</b> <span class="badge"><?php echo $nbln9; ?></span></a>
 		            </div>
 		            <div class="btn-group">
@@ -220,8 +230,9 @@ if(isset($_GET['januari'])){
 		                        echo "btn btn-default";
 		                    $sql_kegiatan_10 = "SELECT * FROM " .kegiatan::$nama_tabel;
 		                    $sql_kegiatan_10 .= " WHERE DATE_FORMAT(tanggal,'%c')='10'";
-		                    $bln10 = $database->query($sql_kegiatan_10);
-		                    $nbln10 = mysql_num_rows($bln10);
+		                    $database->query($sql_kegiatan_10);
+		                    $database->execute();
+		                    $nbln10 = $database->rowCount();;
 		                ?>"><b>Oktober</b> <span class="badge"><?php echo $nbln10; ?></span></a>
 		            </div>
 		            <div class="btn-group">
@@ -233,8 +244,9 @@ if(isset($_GET['januari'])){
 		                        echo "btn btn-default";
 		                    $sql_kegiatan_11 = "SELECT * FROM " .kegiatan::$nama_tabel;
 		                    $sql_kegiatan_11 .= " WHERE DATE_FORMAT(tanggal,'%c')='11'";
-		                    $bln11 = $database->query($sql_kegiatan_11);
-		                    $nbln11 = mysql_num_rows($bln11);
+		                    $database->query($sql_kegiatan_11);
+		                    $database->execute();
+		                    $nbln11 = $database->rowCount();
 		                ?>"><b>November</b> <span class="badge"><?php echo $nbln11; ?></span></a>
 		            </div>
 		            <div class="btn-group">
@@ -246,8 +258,9 @@ if(isset($_GET['januari'])){
 		                        echo "btn btn-default";
 		                    $sql_kegiatan_12 = "SELECT * FROM " .kegiatan::$nama_tabel;
 		                    $sql_kegiatan_12 .= " WHERE DATE_FORMAT(tanggal,'%c')='12'";
-		                    $bln12 = $database->query($sql_kegiatan_12);
-		                    $nbln12 = mysql_num_rows($bln12);
+		                    $database->query($sql_kegiatan_12);
+		                    $database->execute();
+		                    $nbln12 = $database->rowCount();
 		                ?>"><b>Desember</b> <span class="badge"><?php echo $nbln12; ?></span></a>
 		            </div>
 		        </div> 

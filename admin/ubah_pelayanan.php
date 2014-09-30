@@ -33,11 +33,13 @@ if(isset($_POST['simpan'])){
 
     if(empty($errors)){
         $error = $_FILES['upload_file']['error'];
-        if ($error != 1) {
+        if ($error == 0 || $error == 4) {
             $pelayanan->id = $_POST['id'];  
             $pelayanan->name = $_POST['name'];
             $name = $_POST['name'];
-            $pelayanan->upload_gambar($_FILES['upload_file']['tmp_name']);
+
+            if($error != 4)
+                $pelayanan->upload_gambar($_FILES['upload_file']['tmp_name']);
 
             $content = $_POST['content'];
             $entity_content = htmlentities($content);

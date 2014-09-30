@@ -248,21 +248,23 @@ if(isset($_POST['btnhapus'])){
                     <div class="panel-body">
                         <div class="list-group">
                         <?php
-                            $sql_aktivitas_admin = "SELECT * FROM " . admin::$nama_tabel;
+                            $sql_aktivitas_admin = "SELECT ad.id,ad.name,ad.cu,ad.online,cu.id as cuid,cu.name as cuname"; 
+                            $sql_aktivitas_admin .=" FROM " .admin::$nama_tabel. " ad";
+                            $sql_aktivitas_admin .=" LEFT JOIN " .cuprimer::$nama_tabel. " cu";
+                            $sql_aktivitas_admin .=" ON ad.cu = cu.id";
                             $sql_aktivitas_admin .=" ORDER BY online desc";
                             $sql_aktivitas_admin .=" LIMIT 5";
-                            $results = $database->query($sql_aktivitas_admin);
-                            $nResults = mysql_num_rows($results);
-                            if($nResults > 0){
-                                while($row = $database->fetch_array($results)){ 
-                                    $output ="<div class=\"list-group-item\">";
-                                        $cuprimer->id = $row['cu'];
-                                        $sel_cu_admin = $cuprimer->get_subject_by_id();
 
-                                        if($row['cu'] == 0)
+                            $database->query($sql_aktivitas_admin);
+                            $database->execute();
+                            $nResults = $database->rowCount();
+                            if($nResults > 0){
+                                while($row = $database->fetch()){ 
+                                    $output ="<div class=\"list-group-item\">";
+                                        if($row['cuid'] == 0)
                                             $namacu = "BKCU";
                                         else
-                                            $namacu = $sel_cu_admin['name'];
+                                            $namacu = $row['cuname'];
 
                                         $output .=$row['name']. " dari <i>" .$namacu. "</i>";
                                         $phpdate = strtotime( $row['online'] );
@@ -294,21 +296,24 @@ if(isset($_POST['btnhapus'])){
                     <div class="panel-body">
                         <div class="list-group">
                         <?php
-                            $sql_aktivitas_admin = "SELECT * FROM " . admin::$nama_tabel;
+                            $sql_aktivitas_admin = "SELECT ad.id,ad.name,ad.cu,ad.offline,cu.id as cuid,cu.name as cuname"; 
+                            $sql_aktivitas_admin .=" FROM " .admin::$nama_tabel. " ad";
+                            $sql_aktivitas_admin .=" LEFT JOIN " .cuprimer::$nama_tabel. " cu";
+                            $sql_aktivitas_admin .=" ON ad.cu = cu.id";
                             $sql_aktivitas_admin .=" ORDER BY offline desc";
                             $sql_aktivitas_admin .=" LIMIT 5";
-                            $results = $database->query($sql_aktivitas_admin);
-                            $nResults = mysql_num_rows($results);
-                            if($nResults > 0){
-                                while($row = $database->fetch_array($results)){ 
-                                    $output ="<div class=\"list-group-item\">";
-                                        $cuprimer->id = $row['cu'];
-                                        $sel_cu_admin = $cuprimer->get_subject_by_id();
 
-                                        if($row['cu'] == 0)
+                            $database->query($sql_aktivitas_admin);
+                            $database->execute();
+
+                            $nResults = $database->rowCount();
+                            if($nResults > 0){
+                                while($row = $database->fetch()){ 
+                                    $output ="<div class=\"list-group-item\">";
+                                        if($row['cuid'] == 0)
                                             $namacu = "BKCU";
                                         else
-                                            $namacu = $sel_cu_admin['name'];
+                                            $namacu = $row['cuname'];
 
                                         $output .=$row['name']. " dari <i>" .$namacu. "</i>";
                                         $phpdate2 = strtotime( $row['offline'] );
@@ -336,14 +341,24 @@ if(isset($_POST['btnhapus'])){
 
             $tabel = "stat_pengunjung";
             $tanggal = date("Ymd"); // Mendapatkan tanggal sekarang
-            $waktu   = time(); //  
-            $pengunjung       = mysql_num_rows(mysql_query("SELECT * FROM {$tabel} WHERE tanggal='$tanggal' GROUP BY ip"));
-            $totalpengunjung  = mysql_result(mysql_query("SELECT COUNT(hits) FROM {$tabel}"), 0); 
-            $hits             = mysql_fetch_assoc(mysql_query("SELECT SUM(hits) as hitstoday FROM {$tabel} WHERE tanggal='$tanggal' GROUP BY tanggal")); 
-            $totalhits        = mysql_result(mysql_query("SELECT SUM(hits) FROM {$tabel}"), 0); 
-            $tothitsgbr       = mysql_result(mysql_query("SELECT SUM(hits) FROM {$tabel}"), 0); 
+            $waktu   = time();
+
+            $database->query("SELECT * FROM {$tabel} WHERE tanggal=:tanggal GROUP BY ip");
+            $database->bind(':tanggal',$tanggal);
+            $database->execute();
+            $pengunjung       = $database->rowCount();
+
+            $database->query("SELECT COUNT(hits) FROM {$tabel}");
+            $database->execute();
+            $totalpengunjung  = $database->fetchColumn();
+
             $bataswaktu       = time() - 300;
-            $pengunjungonline = mysql_num_rows(mysql_query("SELECT * FROM {$tabel} WHERE online > '$bataswaktu'"));
+
+            $database->query("SELECT * FROM {$tabel} WHERE online > :bataswaktu");
+            $database->bind(':bataswaktu',$bataswaktu);
+            $database->execute();
+            $pengunjungonline = $database->rowCount();
+
             $tanggal_hariini  = date('d-m-Y');
 
             ?>
@@ -360,10 +375,6 @@ if(isset($_POST['btnhapus'])){
                       <dd><b style="font-size: 13px" ><?php echo $totalpengunjung; ?> orang</b></dd>
                       <dt><b style="font-size: 13px" >Pengunjung Online : </b></dt>
                       <dd><b style="font-size: 13px" ><?php echo $pengunjungonline; ?> orang</b></dd>
-                      <dt><b style="font-size: 13px" >Hits Hari Ini : </b></dt>
-                      <dd><b style="font-size: 13px" ><?php echo $hits['hitstoday']; ?>x</b></dd>
-                      <dt><b style="font-size: 13px" >Total Hits : </b></dt>
-                      <dd><b style="font-size: 13px" ><?php echo $totalhits; ?>x</b></dd>
                     </dl>
                 </div>
             </div>
@@ -378,10 +389,11 @@ if(isset($_POST['btnhapus'])){
                 <?php
 
                 $sql_pengumuman = "SELECT * FROM " .saran::$nama_tabel; 
-                $results = $database->query($sql_pengumuman);
-                $nResults = mysql_num_rows($results);
+                $database->query($sql_pengumuman);
+                $database->execute();
+                $nResults = $database->rowCount();
                 if($nResults > 0){
-                    while($row = $database->fetch_array($results)){ 
+                    while($row = $database->fetch()){ 
                         $output ="<ul class=\"chat\">";
                             $output .="<li class=\"clearfix\">";
                                 $output.="<div class=\"chat-body clearfix\">";

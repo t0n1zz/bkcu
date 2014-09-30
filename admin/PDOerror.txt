@@ -5,3 +5,9 @@
 2014-09-29 10:36:21:SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'penulis' cannot be null in C:\xampp\htdocs\bkcu\admin\tampil_pengumuman.php line 38
 2014-09-29 10:36:40:SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'penulis' cannot be null in C:\xampp\htdocs\bkcu\admin\tampil_pengumuman.php line 38
 2014-09-29 11:08:54:SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'cu = 'Pilih Asal Credit Union' WHERE id= '10'' at line 1 in C:\xampp\htdocs\bkcu\admin\ubah_admin.php line 43
+2014-09-29 20:34:41:SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it.
+ in C:\xampp\htdocs\bkcu\includes\database.php line 25
+2014-09-29 20:34:44:SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it.
+ in C:\xampp\htdocs\bkcu\includes\database.php line 25
+2014-09-29 20:34:57:SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it.
+ in C:\xampp\htdocs\bkcu\includes\database.php line 25

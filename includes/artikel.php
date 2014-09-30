@@ -244,6 +244,20 @@ class artikel{
 		return $database->execute();
 	}
 
+	public function update_pilihan(){
+		global $database;
+		$sql ="UPDATE " .self::$nama_tabel. " SET ";
+		$sql .="pilihan = :pilihan";
+		$sql .=" WHERE id = :id";
+
+		$database->query($sql);
+		$database->bind(':id',$this->id);
+		$database->bind(':pilihan',$this->pilihan);
+		$database->execute();
+		
+		return $database->execute();
+	}
+
 	public function delete(){
 		global $database;
 

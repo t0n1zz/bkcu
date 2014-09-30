@@ -48,6 +48,22 @@ if(isset($_POST['btnstatus'])){
     }  
 }
 
+if(isset($_POST['btnpilihan'])){
+    $artikel->id = $_POST['idartikel'];
+    $artikel->pilihan = $_POST['pilihan'];
+
+    try{
+        if($artikel->update_pilihan()){
+            $session->pesan("Berhasil menjadikan artikel ini sebagai artikel pilihan");
+            redirect_to("tampil_artikel.php");
+        }else
+            $message = "Gagal menjadikan artikel ini sebagai artikel pilihan";
+    }catch(PDOException $e){
+        error_notice($e);
+        $message = "Gagal menjadikan artikel ini sebagai artikel pilihan";
+    }  
+}
+
 if(isset($_POST['btnhapus'])){
     $artikel->id = $_POST['id2artikel'];
 
@@ -178,6 +194,8 @@ if(isset($_POST['btnhapus'])){
                                 <th>Kategori</th>
                                 <th>Penulis</th>
                                 <th>Tanggal</th>
+                                <th>Gambar Utama</th>
+                                <th>Artikel Pilihan</th>
                                 <th>Status</th>
                                 <th>Hapus</th>
                             </tr>
@@ -186,7 +204,7 @@ if(isset($_POST['btnhapus'])){
                         <?php
                             $y = "";
 
-                            $sql_tampil = "SELECT ar.id,ar.judul,ar.content,ar.status,ar.kategori,ar.penulis,ar.tanggal,";
+                            $sql_tampil = "SELECT ar.id,ar.judul,ar.content,ar.status,ar.gambar,ar.pilihan,ar.kategori,ar.penulis,ar.tanggal,";
                             $sql_tampil .="k.id as kid,k.name as kname,ad.id as adid,ad.name as adname"; 
                             $sql_tampil .=" FROM " . artikel::$nama_tabel. " ar ";
                             $sql_tampil .=" LEFT JOIN " .kategori_artikel::$nama_tabel. " k ";
@@ -247,6 +265,22 @@ if(isset($_POST['btnhapus'])){
                                         $output .="<td>{$row['tanggal']}</td>";
                                     else
                                         $output .="<td>-</td>";
+
+                                    if(!empty($row['gambar']))
+                                        $output .="<td>Iya</td>";
+                                    else
+                                        $output .="<td>Tidak</td>";
+
+                                    if(!empty($row['pilihan']))
+                                        $output .="<td><a href=\"#\" class=\"modal4\"
+                                                        data-toggle=\"tooltip\" data-placement=\"top\" 
+                                                        title=\"Jadikan artikel ini sebagai artikel pilihan?\"  
+                                                        name={$row['id']}>Iya</a</td>";
+                                    else
+                                        $output .="<td><a href=\"#\" class=\"modal4\"
+                                                        data-toggle=\"tooltip\" data-placement=\"top\" 
+                                                        title=\"Jadikan artikel ini sebagai artikel pilihan?\"  
+                                                        name={$row['id']}>Tidak</a</td>";
 
                                     if($row['status'] == 0)
                                        $output .="<td><a href=\"#\" class=\"modal1\"
@@ -324,6 +358,39 @@ if(isset($_POST['btnhapus'])){
        </form>
     </div>
     <!-- /status -->
+    <!-- pilihan -->
+    <div class="modal fade" id="modal4show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+       <form role="form" action="tampil_artikel.php" method="post">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title ">Artikel Pilihan</h4>
+            </div>
+            <div class="modal-body">
+              <strong>Mengubah artikel ini menjadi artikel pilihan?</strong> 
+              <br />
+              <p>Artikel pilihan akan muncul di slideshow halaman utama</p>
+              <br />
+                    <input type="text" name="idartikel" value="" id="modal4id" hidden>
+                    <select class="form-control" name="pilihan">
+                        <option >Artikel pilihan?</option>
+                        <option >Tidak</option>
+                        <option value="1" >Iya</option>
+                    </select>
+               <br />
+               <br />
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary" name="btnpilihan"
+                    id="modalbutton">Ok</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal"> Batal</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+       </form>
+    </div>
+    <!-- /pilihan -->
     <!-- Hapus -->
     <div class="modal fade" id="modal2show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
        <form role="form" action="tampil_artikel.php" method="post">

@@ -37,16 +37,21 @@ if(isset($_POST['simpan'])){
         $kegiatan->tanggal = $tanggal;
         $kegiatan->tanggal2 = $tanggal2;
 
-        if($kegiatan->save()){
-            if(isset($_POST['simpan'])){
-                $session->pesan("Berhasil mengubah informasi kegiatan {$name}");
-                redirect_to("tampil_kegiatan.php");
+        try{
+            if($kegiatan->save()){
+                if(isset($_POST['simpan'])){
+                    $session->pesan("Berhasil mengubah informasi kegiatan {$name}");
+                    redirect_to("tampil_kegiatan.php");
+                }
+            }else{
+                $message = "Gagal mengubah kegiatan";
             }
-        }else{
-            $message = "Gagal mengubah kegiatan : " . mysql_error();
+        }catch(PDOException $e){
+            $message = "Gagal mengubah kegiatan";
+            error_notice($e);
         }
     }else
-        $message = "Gagal mengubah kegiatan : " . mysql_error();
+        $message = "Gagal mengubah kegiatan";
 }
 
 

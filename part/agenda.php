@@ -15,11 +15,12 @@
         <tbody>	
 		<?php
 
-		$results = $database->query($sql_agenda);
-		$nResults = mysql_num_rows($results);
+		$database->query($sql_agenda);
+		$database->execute();
+		$nResults = $database->rowCount();
 		if($nResults > 0){
 			$i = 0;
-			while($row = $database->fetch_array($results)){
+			while($row = $database->fetch()){
 				if($i <= 4){
 					$output ="<tr>";
 						$output .="<td>";
@@ -91,11 +92,12 @@
 	<div class="col-sm-12 visible-sm visible-xs">
 				<?php
 
-		$results = $database->query($sql_agenda);
-		$nResults = mysql_num_rows($results);
+		$database->query($sql_agenda);
+		$database->execute();
+		$nResults = $database->rowCount();
 		if($nResults > 0){
 			$i = 0;
-			while($row = $database->fetch_array($results)){
+			while($row = $database->fetch()){
 				if($i <= 4){
 					$output ="<div class=\"well well-sm\">";
 						$phpdate = strtotime( $row['tanggal'] );

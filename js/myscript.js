@@ -134,6 +134,16 @@ $('.modal3').on('click',function(){
 	$('#modal3id2').attr('value',myvalue2);
 });
 
+//modal 4
+$('.modal4').on('click',function(){
+	$('#modal4show').modal({
+		show: true,
+	})
+	
+	var myvalue = this.name;
+	$('#modal4id').attr('value',myvalue);
+});
+
 //modal photo
 $('.modalphotos img').on('click',function(){
 	$('#modalphotoshow').modal({

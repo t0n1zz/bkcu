@@ -3,7 +3,7 @@
 require_once("../includes/function.php");
 require_once("../includes/database.php");
 require_once('../includes/session_admin.php');
-require_once("../includes/artikel.php");
+require_once("../includes/artikel_pilihan.php");
 require_once("../includes/kategori_artikel.php");
 require_once("../includes/admin.php");
 
@@ -12,7 +12,7 @@ if(!$session->is_logged_in()){
     redirect_to("login.php");
 }
 
-$artikel = new artikel();
+$artikel_pilihan = new artikel_pilihan();
 $kategori = new kategori_artikel();
 $thispage = "tambah_artikel";
 
@@ -142,13 +142,22 @@ if(isset($_POST['batal'])){
             <?php include_once("component/header.php"); ?>
             <?php include_once("component/sidebar.php"); ?>
         </nav>
+
+        <?php
+            if(isset($_GET['artikel'])){
+                $artikel_pilihan->id = $_GET['artikel'];
+                $sel_artikel = $artikel_pilihan->get_subject_by_id();
+            }else{
+                redirect_to("wrong.php");
+            }
+        ?>
              
         <!-- Content -->
         <div id="page-wrapper">
             <!-- header -->
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header"><span class="fa fa-plus"></span> Tambah Artikel</h1>
+                    <h1 class="page-header"><span class="fa fa-plus"></span> Ubah Artikel Pilihan</h1>
                 </div>           
             </div>
             <!-- /header --> 
@@ -186,11 +195,8 @@ if(isset($_POST['batal'])){
                     <div class="panel-heading tooltip-demo">
                         <button type="submit" name="simpan" data-toggle="tooltip" data-placement="top" 
                                     title="Menyimpan artikel" class="btn btn-default"><span class="fa fa-save"></span> Simpan</button>
-                        <button type="submit" name="simpanbaru" data-toggle="tooltip" data-placement="top" 
-                                    title="Menyimpan artikel dan memulai menulis artikel baru" 
-                                    class="btn btn-default"><span class="fa fa-save"></span> <span class="fa fa-plus"></span> Simpan dan buat baru</button>
                         <button type="submit" name="batal" data-toggle="tooltip" data-placement="top" 
-                                    title="Batal menambah artikel dan kembali ke halaman Kelola Artikel" 
+                                    title="Batal menambah artikel dan kembali ke halaman Kelola Artikel Pilihan" 
                                     class="btn btn-default"><span class="fa fa-times-circle"></span> Batal</button>
                     </div>
                     <!--/button-->
@@ -199,56 +205,78 @@ if(isset($_POST['batal'])){
                         <!--judul-->
                         <div class="col-lg-10">
                         <div class="form-group">
-                            <label>Judul Artikel</label>
-                            <input type="text" name="judul" class="form-control" 
-                                    placeholder="Silahkan masukkan judul artikel"/>
+                            <label>Judul</label>
+                            <?php
+                                $show_judul = $sel_artikel['judul'];
+                                if(!empty($show_judul))
+                                    echo "<input type=\"text\" name=\"judul\" class=\"form-control\" 
+                                            placeholder=\"Silahkan masukkan judul artikel\" value=\"$show_judul\" />";
+                                else
+                                    echo "<input type=\"text\" name=\"judul\" class=\"form-control\" 
+                                            placeholder=\"Silahkan masukkan judul artikel\" value=\"\" />";
+                            ?>
                         </div>
                         </div>
                         <!--/judul-->
-                        <!--kategori-->
-                        <div class="col-lg-4">
-                        <div class="form-group">
-                            <label>Kategori</label>
-                            <select class="form-control" onChange="changeFunc(value);" name="kategori">
-                            <option >Pilih Kategori Artikel</option>
-                            <?php
-                                $database->query("select * from ". kategori_artikel::$nama_tabel. " WHERE id NOT IN(1)");
-                                $database->execute();
-                                while($row =$database->fetch()){
-                                    $output = "<option value=\"{$row['id']}\">{$row['name']}</option>";
-                                    echo $output;
-                                }
-                            ?>
-                            <option value="tambah" >Tambah Kategori Baru</option>
-                            </select>
+                        <!--gambar-->
+                        <div class="col-lg-5">
+                        <label>Upload Gambar</label>
+                            <div class="thumbnail">
+                                <img class="img-responsive" src="<?php
+                                            $gambar = $sel_artikel['gambar'];
+                                            $gambar = str_replace(' ', '%20', $gambar);
+                                            if(!empty($gambar) && is_file("../images_pilihan/{$gambar}"))
+                                                echo "../images_pilihan/{$gambar}";
+                                            else
+                                                echo "../images/no_image.jpg";
+                                        ?> "
+                                        id="tampilgambar"
+                                        alt="Generic placeholder image" style="width: 300px;; height: 200px;">
+                             <div class="caption">
+                                <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $max_file_size; ?>" />
+                                <input onChange="readURL(this);" type="file" name="upload_file" 
+                                        accept="image/jpeg" value=<?php
+                                            if(!empty($sel_artikel['gambar']))
+                                                echo $sel_artikel['gambar'];
+                                        ?>
+                                        />
+                             </div>
+                            </div>
                         </div>
-                        </div>
-                        <!--/kategori-->
-                        <!--kategori baru-->
-                        <div class="col-lg-4"  id="pilihan" style="display:none;">
-                        <div class="form-group">
-                            <label>Kategori Baru</label>
-                            <input type="text" class="form-control" 
-                                name="kategori_baru" placeholder="Masukkan Kategori Baru" maxlength="30">
-                        </div>
-                        </div>
-                        <!--/kategori baru-->
+                        <!--/gambar-->
                         <!--status-->
                         <div class="col-lg-4">
                         <div class="form-group">
                             <label>Status</label>
                             <select class="form-control" name="status">
-                                <option >Pilih Status Publikasi Artikel</option>
-                                <option >Tidak diterbitkan</option>
-                                <option value="1" >Terbitkan</option>
+                            <option >Pilih Status Publikasi Artikel</option>
+                            <option 
+                                <?php
+                                    if($sel_artikel['status'] == 0)
+                                        echo " selected";
+                                ?>
+                            >Tidak diterbitkan</option>
+                            <option value="1" 
+                                <?php
+                                if($sel_artikel['status'] == 1)
+                                    echo " selected";
+                                ?>
+                            >Terbitkan</option>
                             </select>
                         </div>
                         </div>
                         <!--/status-->
                         <!--content-->
                         <div class="col-lg-12">
-                            <label>Isi Artikel</label>
+                            <label>Deskripsi</label>
                             <textarea name="content" style="height:300px">
+                                <?php
+                                    $show_content = $sel_artikel['content'];
+                                    if(!empty($show_content)){
+                                        $fill_block = html_entity_decode($show_content);
+                                        echo $fill_block;
+                                    }
+                                ?>
                             </textarea>
                         </div>
                         <!--/content-->

@@ -76,6 +76,17 @@
     </li>
     -->
     <!-- /alert -->
+     <li class="dropdown">
+    Last Login : <?php 
+    require_once("../includes/admin.php"); 
+    $admin = new admin();
+    $admin->id = "1";
+    $sel_admin= $admin->get_subject_by_id();
+    $phpdate2 = strtotime( $sel_admin['offline'] );
+    $mysqldate2 = date( 'd-m-Y H:i:s', $phpdate2 );
+    echo $mysqldate2;
+    ?>
+    </li>
     <!-- user -->
     <li class="dropdown">
         <!--<a class="dropdown-toggle" data-toggle="dropdown" href="#">
