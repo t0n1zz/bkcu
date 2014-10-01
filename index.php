@@ -154,6 +154,18 @@ if(isset($_POST['kirim'])){
 						<div class="products-slider">
 						<?php include("part/gambar_kegiatan.php"); ?>
 						</div>
+						<?php
+							$output ="<div class=\"row\">";
+							$output .="<div class=\"col-sm-12\"><div class=\"col-sm-12\">";
+								$output .="<hr style=\"border-top:1px solid #D2D2D2;\" />";
+								$output .="<a href=\"https://www.flickr.com/photos/127271987@N07/\"
+											  target=\"_BLANK\" 
+											  class=\"btn pull-right\"><b>Selengkapnya &raquo</b></a>";
+							$output .="</div></div>";
+							$output .="</div>";
+
+							echo $output;
+						?>
 					</div>
 				</div>
 			</div>

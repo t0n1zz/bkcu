@@ -3,8 +3,6 @@
 		<ul class="sequence-canvas">
 			<!-- Slide 1 -->
 <?php
-require_once("includes/artikel_pilihan.php");
-$artikel_pilihan = new artikel_pilihan();
 
 $sql_artikel_pilihan = "SELECT * FROM " . artikel::$nama_tabel;
 $sql_artikel_pilihan .=" WHERE pilihan = 1";
